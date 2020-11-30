@@ -32,7 +32,10 @@
 		<button type="submit">Login</button>
 	</div>
 </form>
-
+<form action="employeeLogin.jsp">
+	<br>
+	<input type="submit" value="Employeee Login">
+</form>
 <!-- Create Account: Create an Account by clicking the button -->
 <form action="createUser.jsp">
 	<br>
