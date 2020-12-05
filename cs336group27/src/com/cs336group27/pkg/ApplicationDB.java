@@ -3,6 +3,9 @@ import java.io.*;
 import java.util.*;
 import java.sql.*;
 import javax.servlet.http.*;
+
+import javax.sql.rowset.CachedRowSetImpl;
+
 import javax.servlet.*;
 public class ApplicationDB {
 	
@@ -85,7 +88,7 @@ public class ApplicationDB {
 		try {
 			ApplicationDB db = new ApplicationDB();	
 			Connection con = db.getConnection();
-			String check = "select count(*) eCount from Employees where username = (?) and password_customer = (?) and employeeID = (?)";
+			String check = "select count(*) eCount from Employees where username = (?) and password_employee = (?) and employeeID = (?)";
 			PreparedStatement ps = con.prepareStatement(check);
 			ps.setString(1, u);
 			ps.setString(2, p);
@@ -100,6 +103,45 @@ public class ApplicationDB {
 			System.out.println(e.getMessage());
 			return -1;
 		}
+	}
+	public String employeeIsAdmin(String u, String p, int eid) {
+		try {
+			ApplicationDB db = new ApplicationDB();	
+			Connection con = db.getConnection();
+			String query = "select isAdmin from Employees where username = (?) and password_employee = (?) and employeeID = (?)";
+			PreparedStatement ps = con.prepareStatement(query);
+			ps.setString(1, u);
+			ps.setString(2, p);
+			ps.setString(3, Integer.toString(eid));
+			ResultSet rs = ps.executeQuery();
+			rs.next();
+			String empType = rs.getString("isAdmin");
+			con.close();
+			rs.close();
+			return empType;
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+			return "ERROR";
+		}	
+	}
+	public String[] employeeInfo(int eid) {
+		try {
+			ApplicationDB db = new ApplicationDB();	
+			Connection con = db.getConnection();
+			String query = "select first_name,last_name from Employees where employeeID = (?)";
+			PreparedStatement ps = con.prepareStatement(query);
+			ps.setString(1, Integer.toString(eid));
+			ResultSet rs = ps.executeQuery();
+			rs.next();
+			String first = rs.getString("first_name");
+			String last = rs.getString("last_name");
+			con.close();
+			rs.close();
+			return new String[] {first,last};
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+			return new String[] {"ERROR","ERROR"};
+		}	
 	}
 	public int userNameExistence(String u) {
 		try {
@@ -147,6 +189,31 @@ public class ApplicationDB {
 			return -1;
 		}
 	}
-	
+	public String[][] getAllCustomerReps() {
+		try {
+			ApplicationDB db = new ApplicationDB();	
+			Connection con = db.getConnection();
+			String check = "select *,count(*) counts from Employees where isCusRep = 'Yes'";
+			PreparedStatement ps = con.prepareStatement(check);
+			ResultSet rs = ps.executeQuery();
+			String[][] custReps = new String[rs.getInt("counts")][6];
+			int arrayCount  = 0;
+			while (rs.next()) {
+				custReps[arrayCount][0]=(rs.getString("first_name"));
+				custReps[arrayCount][1]=(rs.getString("last_name"));
+				custReps[arrayCount][2]=(rs.getString("username"));
+				custReps[arrayCount][3]=(rs.getString("ssn"));
+				custReps[arrayCount][4]=(rs.getString("email"));
+				custReps[arrayCount][5]=(rs.getString("stationID"));
+
+			}
+			con.close();
+			rs.close();
+			return custReps;
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+			return null;
+		}
+	}
 
 }
