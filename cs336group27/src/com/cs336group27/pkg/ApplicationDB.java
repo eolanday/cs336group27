@@ -4,8 +4,6 @@ import java.util.*;
 import java.sql.*;
 import javax.servlet.http.*;
 
-import javax.sql.rowset.CachedRowSetImpl;
-
 import javax.servlet.*;
 public class ApplicationDB {
 	
@@ -189,30 +187,35 @@ public class ApplicationDB {
 			return -1;
 		}
 	}
-	public String[][] getAllCustomerReps() {
+	public String[][] getAllCustomerReps() throws Exception {
 		try {
 			ApplicationDB db = new ApplicationDB();	
 			Connection con = db.getConnection();
-			String check = "select *,count(*) counts from Employees where isCusRep = 'Yes'";
-			PreparedStatement ps = con.prepareStatement(check);
-			ResultSet rs = ps.executeQuery();
-			String[][] custReps = new String[rs.getInt("counts")][6];
+			String check = "select * from Employees where isCusRep = 'Yes'";
+			String preCount = "select count(*) counts from Employees where isCusRep = 'Yes'";
+			PreparedStatement ps1 = con.prepareStatement(check);
+			PreparedStatement ps2 = con.prepareStatement(preCount);
+			ResultSet rs1 = ps1.executeQuery();
+			ResultSet rs2 = ps2.executeQuery();
+			rs2.next();
+			String[][] custReps = new String[rs2.getInt("counts")][6];
 			int arrayCount  = 0;
-			while (rs.next()) {
-				custReps[arrayCount][0]=(rs.getString("first_name"));
-				custReps[arrayCount][1]=(rs.getString("last_name"));
-				custReps[arrayCount][2]=(rs.getString("username"));
-				custReps[arrayCount][3]=(rs.getString("ssn"));
-				custReps[arrayCount][4]=(rs.getString("email"));
-				custReps[arrayCount][5]=(rs.getString("stationID"));
-
+			while (rs1.next()) {
+				custReps[arrayCount][0]=(rs1.getString("first_name"));
+				custReps[arrayCount][1]=(rs1.getString("last_name"));
+				custReps[arrayCount][2]=(rs1.getString("username"));
+				custReps[arrayCount][3]=(rs1.getString("ssn"));
+				custReps[arrayCount][4]=(rs1.getString("email"));
+				custReps[arrayCount][5]=(rs1.getString("stationID"));
+				arrayCount++;
 			}
 			con.close();
-			rs.close();
+			rs1.close();
+			rs2.close();
 			return custReps;
 		}catch(Exception e) {
 			System.out.println(e.getMessage());
-			return null;
+			throw e;
 		}
 	}
 
