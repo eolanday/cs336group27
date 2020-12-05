@@ -21,6 +21,9 @@
 	out.print("<table>");
 	out.print("<tr>");
 	out.print("<td>");
+	out.print("EmployeeID");
+	out.print("</td>");
+	out.print("<td>");
 	out.print("First Name");
 	out.print("</td>");
 	out.print("<td>");
@@ -59,10 +62,33 @@
 		out.print("<td>");
 		out.print(custReps[i][5]);
 		out.print("</td>");
+		out.print("<td>");
+		out.print(custReps[i][6]);
+		out.print("</td>");
 		out.print("</tr>");
 	}
 	out.print("</table>");
 	%>
+	<br>
+	<form action = "adminCustRepEdit.jsp">
+		<label for = "empID">EmployeeID:</label>
+		<select name="empID" id = "cars">
+		<%
+			String temp = "";
+			for(int i = 0; i<custReps.length ; i++){
+				temp = "<option value='".concat(custReps[i][0]).concat("'>").concat(custReps[i][0]).concat("</option>");
+				out.print(temp);
+				System.out.println(temp);
+			}
+		%>
+		</select>
+		<br><br>
+		<input type="submit" value="Edit Customer Representative"> ${message}
+	</form>
+	<form action="adminHomepage.jsp">
+		<br>
+		<input type="submit" value="Create Customer Representativee">
+	</form>
 	<form action="adminHomepage.jsp">
 		<br>
 		<input type="submit" value="Go Back to Admin Homepage">

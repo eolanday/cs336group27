@@ -198,15 +198,16 @@ public class ApplicationDB {
 			ResultSet rs1 = ps1.executeQuery();
 			ResultSet rs2 = ps2.executeQuery();
 			rs2.next();
-			String[][] custReps = new String[rs2.getInt("counts")][6];
+			String[][] custReps = new String[rs2.getInt("counts")][7];
 			int arrayCount  = 0;
 			while (rs1.next()) {
-				custReps[arrayCount][0]=(rs1.getString("first_name"));
-				custReps[arrayCount][1]=(rs1.getString("last_name"));
-				custReps[arrayCount][2]=(rs1.getString("username"));
-				custReps[arrayCount][3]=(rs1.getString("ssn"));
-				custReps[arrayCount][4]=(rs1.getString("email"));
-				custReps[arrayCount][5]=(rs1.getString("stationID"));
+				custReps[arrayCount][0]=(rs1.getString("employeeID"));
+				custReps[arrayCount][1]=(rs1.getString("first_name"));
+				custReps[arrayCount][2]=(rs1.getString("last_name"));
+				custReps[arrayCount][3]=(rs1.getString("username"));
+				custReps[arrayCount][4]=(rs1.getString("ssn"));
+				custReps[arrayCount][5]=(rs1.getString("email"));
+				custReps[arrayCount][6]=(rs1.getString("stationID"));
 				arrayCount++;
 			}
 			con.close();
@@ -218,5 +219,78 @@ public class ApplicationDB {
 			throw e;
 		}
 	}
-
+	public String[] getCustomerRepInfo(int eid) {
+		try {
+			ApplicationDB db = new ApplicationDB();	
+			Connection con = db.getConnection();
+			String query = "select * from Employees where employeeID = (?)";
+			PreparedStatement ps = con.prepareStatement(query);
+			ps.setString(1, Integer.toString(eid));
+			ResultSet rs = ps.executeQuery();
+			rs.next();
+			String[] repInfo = new String[8];		
+			repInfo[0]=(rs.getString("employeeID"));
+			repInfo[1]=(rs.getString("first_name"));
+			repInfo[2]=(rs.getString("last_name"));
+			repInfo[3]=(rs.getString("username"));
+			repInfo[4]=(rs.getString("ssn"));
+			repInfo[5]=(rs.getString("email"));
+			repInfo[6]=(rs.getString("stationID"));
+			repInfo[7]=(rs.getString("password_employee"));
+			con.close();
+			rs.close();
+			return repInfo;
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+			return null;
+		}	
+	}
+	public int updateCustomerRep(String id, String ssnVal, String fname, String lname, String email, String uname, String pw, String stationID) {
+		try {
+			ApplicationDB db = new ApplicationDB();	
+			Connection con = db.getConnection();
+			Statement stmt = con.createStatement();
+			String query ="SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED";
+			stmt.executeQuery(query);
+			query = "update Employees set ssn = (?),first_name = (?), last_name = (?), email = (?), username = (?), password_employee = (?), stationID = (?) where employeeID = (?)";
+			PreparedStatement ps = con.prepareStatement(query);
+			ps.setString(1, ssnVal);
+			ps.setString(2, fname);
+			ps.setString(3, lname);
+			ps.setString(4, email);
+			ps.setString(5, uname);
+			ps.setString(6, pw);
+			ps.setInt(7, Integer.parseInt(stationID));
+			ps.setInt(8, Integer.parseInt(id));
+			int rows = ps.executeUpdate();
+			query ="SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ";
+			stmt.executeQuery(query);
+			stmt.close();
+			con.close();
+			return rows;
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+			return -1;
+		}
+	}
+	public int deleteCustomerRep(String id) throws Exception {
+		try {
+			ApplicationDB db = new ApplicationDB();	
+			Connection con = db.getConnection();
+			Statement stmt = con.createStatement();
+			String query ="SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED";
+			stmt.executeQuery(query);
+			query = "delete from Employees where employeeID = (?)";
+			PreparedStatement ps = con.prepareStatement(query);
+			ps.setInt(1, Integer.parseInt(id));
+			int rows = ps.executeUpdate();
+			query ="SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ";
+			stmt.executeQuery(query);
+			stmt.close();
+			con.close();
+			return rows;
+		}catch(Exception e) {
+			throw e;
+		}
+	}
 }
