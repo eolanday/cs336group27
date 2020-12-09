@@ -133,24 +133,31 @@ public class ApplicationDB {
 			rs.next();
 			String first = rs.getString("first_name");
 			String last = rs.getString("last_name");
+			String admin = rs.getString("isAdmin");
+			String cusRep = rs.getString("isCusRep");
 			con.close();
 			rs.close();
-			return new String[] {first,last};
+			return new String[] {first,last,admin,cusRep};
 		}catch(Exception e) {
 			System.out.println(e.getMessage());
 			return new String[] {"ERROR","ERROR"};
 		}	
 	}
-	public int userNameExistence(String u) {
+	public int userNameExistence(String u, String type) {
 		try {
 			ApplicationDB db = new ApplicationDB();	
 			Connection con = db.getConnection();
-			String check = "select count(*) custCount from Customers where username = (?)";
+			String check = "";
+			if(type.equals("Customer")) {
+				check = "select count(*) ct from Customers where username = (?)";
+			}else {
+				check = "select count(*) ct from Employees where username = (?)";
+			}
 			PreparedStatement ps = con.prepareStatement(check);
 			ps.setString(1, u);
 			ResultSet rs = ps.executeQuery();
 			rs.next();
-			int userCount = rs.getInt("custCount");
+			int userCount = rs.getInt("ct");
 			con.close();
 			rs.close();
 			return userCount;
@@ -291,6 +298,48 @@ public class ApplicationDB {
 			return rows;
 		}catch(Exception e) {
 			throw e;
+		}
+	}
+	public int createEmployee(String fn, String ln, String email, String uname, String pw, String ssn, String stationID, String custRep, String admin) {
+		
+		try {
+			ApplicationDB db = new ApplicationDB();	
+			Connection con = db.getConnection();
+			Statement stmt = con.createStatement();
+			String query ="SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED";
+			stmt.executeQuery(query);
+			query ="Select @newID := MAX(employeeID) + 1 FROM Employees";
+			stmt.executeQuery(query);
+			query = "insert into Employees (employeeID,ssn,first_name,last_name,email,username,password_employee,stationID,isAdmin,isCusRep) values(@newID,(?),(?),(?),(?),(?),(?),(?),(?),(?))";
+			PreparedStatement ps = con.prepareStatement(query);
+			ps.setString(1, ssn);
+			ps.setString(2, fn);
+			ps.setString(3, ln);
+			ps.setString(4, email);
+			ps.setString(5, uname);
+			ps.setString(6, pw);
+			ps.setInt(7, Integer.parseInt(stationID));
+			ps.setString(8, custRep);
+			ps.setString(9, admin);
+			int rows = ps.executeUpdate();
+			if (rows <= 0) {
+				return -1;
+			}
+			query = "select employeeID from Employees where username = (?)";
+			ps = con.prepareStatement(query);
+			ps.setString(1, uname);
+			ResultSet rs = ps.executeQuery();
+			rs.next();
+			rows=(rs.getInt("employeeID"));
+			query ="SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ";
+			stmt.executeQuery(query);
+			stmt.close();
+			rs.close();
+			con.close();
+			return rows;
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+			return -1;
 		}
 	}
 }
