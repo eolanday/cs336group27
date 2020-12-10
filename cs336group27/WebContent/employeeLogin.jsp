@@ -30,7 +30,7 @@
 		
 		<!-- Click button to login -->
 		<button type="submit" name= "login" value="admin">Admin Login</button>
-		<button type="submit" name= "login" value="cusRep">Customer Representative Update</button>
+		<button type="submit" name= "login" value="cusRep">Customer Representative Login</button>
 	</div>
 </form>
 <form action="index.jsp">

@@ -12,7 +12,7 @@
 <h3>Create Employee</h3>
 </header>
 <body>
-<form action="createEmployeeServlet" method="post">
+<form action="CreateEmployeeServlet" method="post">
 	<div class="container" id="createUser">
 		
 		<!-- Enter Username -->
@@ -51,11 +51,16 @@
 		<br><br>
 		<label for="custrep"> Customer Representative</label>
 		<input type="checkbox" id="custrep" name="custrep" value="custrep">
+		<br>
 		<label for="admin"> Administrator</label>
 		<input type="checkbox" id="admin" name="admin" value="admin">
-		<!-- Create an Account by clicking the button. Account gets stored into database. -->
+		<br>
 		<button type="submit">Create Account</button> ${message}
 	</div>
 </form>
+	<form action="adminCustRep.jsp">
+		<br>
+		<input type="submit" value="Go Back">
+	</form>
 </body>
 </html>

@@ -5,18 +5,17 @@ import java.io.IOException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
+
+import com.cs336group27.model.Employee;
 
 /**
- * Servlet implementation class CreateEmployee
+ * Servlet implementation class CreateEmployeeServlet
  */
-@WebServlet("/CreateEmployee")
+@WebServlet("/CreateEmployeeServlet")
 public class CreateEmployeeServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private ApplicationDB appDB = new ApplicationDB();
-       
+	private ApplicationDB appDB = new ApplicationDB();   
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -97,3 +96,5 @@ public class CreateEmployeeServlet extends HttpServlet {
 		}
 	}
 }
+
+

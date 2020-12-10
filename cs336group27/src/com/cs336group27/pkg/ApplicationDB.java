@@ -126,7 +126,7 @@ public class ApplicationDB {
 		try {
 			ApplicationDB db = new ApplicationDB();	
 			Connection con = db.getConnection();
-			String query = "select first_name,last_name from Employees where employeeID = (?)";
+			String query = "select first_name,last_name,isAdmin,isCusRep from Employees where employeeID = (?)";
 			PreparedStatement ps = con.prepareStatement(query);
 			ps.setString(1, Integer.toString(eid));
 			ResultSet rs = ps.executeQuery();

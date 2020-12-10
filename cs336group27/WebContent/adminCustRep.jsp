@@ -85,7 +85,7 @@
 		<br><br>
 		<input type="submit" value="Edit Customer Representative"> ${message}
 	</form>
-	<form action="adminHomepage.jsp">
+	<form action="createEmployee.jsp">
 		<br>
 		<input type="submit" value="Create Customer Representativee">
 	</form>

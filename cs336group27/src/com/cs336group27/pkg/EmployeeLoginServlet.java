@@ -48,18 +48,32 @@ public class EmployeeLoginServlet extends HttpServlet {
 				String empType = appDB.employeeIsAdmin(emp.getUsername(), emp.getPassword(), emp.getEmployeeID());
 				String[] empInfo = appDB.employeeInfo(emp.getEmployeeID());
 				emp.setName(empInfo[0], empInfo[1]);
-				if (empType.equals("Yes")) {
-					count = new Integer (1);
-					session.setAttribute("COUNT", count);
-					session.setAttribute("employee",emp);
-					RequestDispatcher rd = request.getRequestDispatcher("adminHomepage.jsp");
-					rd.forward(request, response);
-				}else if(empType.equals("No")) {
-					count = new Integer (1);
-					session.setAttribute("COUNT", count);
-					session.setAttribute("employee",emp);
-					RequestDispatcher rd = request.getRequestDispatcher("custRepHomepage.jsp");
-					rd.forward(request, response);
+				if (request.getParameter("login").equals("admin")) {
+					if(empInfo[2].equals("Yes")) {
+						count = new Integer (1);
+						session.setAttribute("COUNT", count);
+						session.setAttribute("employee",emp);
+						RequestDispatcher rd = request.getRequestDispatcher("adminHomepage.jsp");
+						rd.forward(request, response);
+					}else {
+						String message = "Login Failed. Unauthorized.";
+						request.setAttribute("message", message);
+						RequestDispatcher rd = request.getRequestDispatcher("employeeLogin.jsp");
+						rd.forward(request, response);
+					}
+				}else if(request.getParameter("login").equals("cusRep")) {
+					if(empInfo[3].equals("Yes")) {
+						count = new Integer (1);
+						session.setAttribute("COUNT", count);
+						session.setAttribute("employee",emp);
+						RequestDispatcher rd = request.getRequestDispatcher("cusRepHomepage.jsp");
+						rd.forward(request, response);
+					}else {
+						String message = "Login Failed. Unauthorized.";
+						request.setAttribute("message", message);
+						RequestDispatcher rd = request.getRequestDispatcher("employeeLogin.jsp");
+						rd.forward(request, response);
+					}
 				}else {
 					String message = "Login Failed. Unknown Error.";
 					request.setAttribute("message", message);
