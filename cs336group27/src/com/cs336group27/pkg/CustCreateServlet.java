@@ -41,7 +41,7 @@ public class CustCreateServlet extends HttpServlet {
 		
 		if(request.getParameter("psw").equals(request.getParameter("pswc"))) {
 			if(request.getParameter("email").contains("@")) {
-				int checkUName=appDB.userNameExistence(request.getParameter("uname"));
+				int checkUName=appDB.userNameExistence(request.getParameter("uname"),"Customer");
 				if(checkUName == 0) {
 					 int rowCount = appDB.createCustomerUser(request.getParameter("fname"), request.getParameter("lname"), request.getParameter("email"), request.getParameter("uname"), request.getParameter("psw"));
 					 if(rowCount > 0) {
