@@ -25,14 +25,16 @@
 		</div>
 	</form>
 	<br>
-	<form action="adminReservationList.jsp">
+	<form action="adminReservationListServlet" method='post'>
 		<div class="container" id="resvList">
+			<input type="hidden" id = "listType", name = "listType", value = "customer">
 			<button type="submit">Reservation List</button>
 		</div>
 	</form>
 	<br>
-	<form action="adminRevenueLists.jsp">
+	<form action="adminRevenueListsServlet" method = 'post'>
 		<div class="container" id="revenue">
+			<input type="hidden" id = "listType", name = "listType", value = "customer">
 			<button type="submit">Revenue Listings</button>
 		</div>
 	</form>

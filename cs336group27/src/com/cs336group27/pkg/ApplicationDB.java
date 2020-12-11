@@ -3,7 +3,7 @@ import java.io.*;
 import java.util.*;
 import java.sql.*;
 import javax.servlet.http.*;
-
+import java.text.SimpleDateFormat;
 import javax.servlet.*;
 public class ApplicationDB {
 	
@@ -340,6 +340,144 @@ public class ApplicationDB {
 		}catch(Exception e) {
 			System.out.println(e.getMessage());
 			return -1;
+		}
+	}
+	public String[][] getMonthlyReport() throws Exception {
+		try {
+			ApplicationDB db = new ApplicationDB();	
+			Connection con = db.getConnection();
+			String check = "select MONTH(reservation_date) as month,Round(sum(total_fare),2) TotalFare, count(*) ReservationCount from Reservations group by month order by month";
+			String preCount = "select count(distinct(MONTH(reservation_date))) as monthCount from Reservations";
+			PreparedStatement ps1 = con.prepareStatement(check);
+			PreparedStatement ps2 = con.prepareStatement(preCount);
+			ResultSet rs1 = ps1.executeQuery();
+			ResultSet rs2 = ps2.executeQuery();
+			rs2.next();
+			String[][] monthReport = new String[rs2.getInt("monthCount")][3];
+			int arrayCount  = 0;
+			while (rs1.next()) {
+				monthReport[arrayCount][0]=(Integer.toString(rs1.getInt("month")));
+				monthReport[arrayCount][1]=(Float.toString(rs1.getFloat("TotalFare")));
+				monthReport[arrayCount][2]=(Integer.toString(rs1.getInt("ReservationCount")));
+				arrayCount++;
+			}
+			con.close();
+			rs1.close();
+			rs2.close();
+			return monthReport;
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+			throw e;
+		}
+	}
+	public String[][] getReservationList(String by) throws Exception {
+		try {
+			SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+			ApplicationDB db = new ApplicationDB();	
+			Connection con = db.getConnection();
+			String check = "";
+			if(by.equals("customer")) {
+				check = "select * from Reservations res inner join Customers cust on res.customerid = cust.customerID order by cust.customerID;";
+			}else {
+				//(by.equals("transit"))
+				check = "select * from Reservations res inner join Customers cust on res.customerid = cust.customerID order by res.scheduleID;";
+			}
+			String preCount = "select count(*) tupleCount from Reservations";
+			PreparedStatement ps1 = con.prepareStatement(check);
+			PreparedStatement ps2 = con.prepareStatement(preCount);
+			ResultSet rs1 = ps1.executeQuery();
+			ResultSet rs2 = ps2.executeQuery();
+			rs2.next();
+			String[][] resList = new String[rs2.getInt("tupleCount")][9];
+			int arrayCount  = 0;
+			while (rs1.next()) {
+				resList[arrayCount][0]=(Integer.toString(rs1.getInt("reservation_number")));
+				resList[arrayCount][1]=(formatter.format(rs1.getDate("reservation_date")));
+				resList[arrayCount][2]=(Integer.toString(rs1.getInt("total_fare")));
+				resList[arrayCount][3]=(Integer.toString(rs1.getInt("trainID")));
+				resList[arrayCount][4]=(Integer.toString(rs1.getInt("scheduleID")));
+				resList[arrayCount][5]=(Integer.toString(rs1.getInt("customerid")));
+				resList[arrayCount][6]=((rs1.getString("reservation_type")));
+				resList[arrayCount][7]=((rs1.getString("first_name")));
+				resList[arrayCount][8]=((rs1.getString("last_name")));
+				arrayCount++;
+			}
+			con.close();
+			rs1.close();
+			rs2.close();
+			return resList;
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+			throw e;
+		}
+	}
+	public String[][] getRevenueList(String by) throws Exception {
+		try {
+			//SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+			ApplicationDB db = new ApplicationDB();	
+			Connection con = db.getConnection();
+			String check = "";
+			String preCount= "";
+			String[][] resList;
+			ResultSet rs1,rs2;
+			if(by.equals("customer")) {
+				check = "select cust.customerID, first_name, last_name,round(sum(total_fare),2) fare  from Reservations res inner join Customers cust on res.customerid = cust.customerID group by cust.customerID order by fare desc";
+				preCount = "select count(distinct cust.customerID) tupleCount from Reservations res inner join Customers cust on res.customerid = cust.customerID";
+				PreparedStatement ps1 = con.prepareStatement(check);
+				PreparedStatement ps2 = con.prepareStatement(preCount);
+				rs1 = ps1.executeQuery();
+				rs2 = ps2.executeQuery();
+				rs2.next();
+				resList = new String[rs2.getInt("tupleCount")][4];
+				int arrayCount  = 0;
+				while (rs1.next()) {
+					resList[arrayCount][0]=(Integer.toString(rs1.getInt("customerID")));
+					resList[arrayCount][1]=(rs1.getString("first_name"));
+					resList[arrayCount][2]=(rs1.getString("last_name"));
+					resList[arrayCount][3]=(Float.toString(rs1.getFloat("fare")));
+					arrayCount++;
+				}
+			}else if(by.equals("besttransitlines")) {
+				check = "select res.scheduleID,count(reservation_number) resCount from Reservations res inner join Customers cust on res.customerid = cust.customerID group by res.scheduleID order by resCount desc limit 5;";
+				preCount = "select count(distinct scheduleID) tupleCount from Reservations res inner join Customers cust on res.customerid = cust.customerID";
+				PreparedStatement ps1 = con.prepareStatement(check);
+				PreparedStatement ps2 = con.prepareStatement(preCount);
+				rs1 = ps1.executeQuery();
+				rs2 = ps2.executeQuery();
+				rs2.next();
+				resList = new String[rs2.getInt("tupleCount")][2];
+				int arrayCount  = 0;
+				while (rs1.next()) {
+					resList[arrayCount][0]=(Integer.toString(rs1.getInt("scheduleID")));
+					resList[arrayCount][1]=(Float.toString(rs1.getFloat("resCount")));
+					arrayCount++;
+				}
+			}else{
+				//(by.equals("transit"))
+				check = "select scheduleID,round(sum(total_fare),2) fare  from Reservations res inner join Customers cust on res.customerid = cust.customerID group by scheduleID order by fare desc";
+				preCount = "select count(distinct scheduleID) tupleCount from Reservations res inner join Customers cust on res.customerid = cust.customerID";
+				PreparedStatement ps1 = con.prepareStatement(check);
+				PreparedStatement ps2 = con.prepareStatement(preCount);
+				rs1 = ps1.executeQuery();
+				rs2 = ps2.executeQuery();
+				rs2.next();
+				resList = new String[rs2.getInt("tupleCount")][2];
+				int arrayCount  = 0;
+				while (rs1.next()) {
+					resList[arrayCount][0]=(Integer.toString(rs1.getInt("scheduleID")));
+					resList[arrayCount][1]=(Float.toString(rs1.getFloat("fare")));
+
+					arrayCount++;
+				}
+			}
+
+			con.close();
+			rs1.close();
+			rs2.close();
+			return resList;
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+			throw e;
 		}
 	}
 }
