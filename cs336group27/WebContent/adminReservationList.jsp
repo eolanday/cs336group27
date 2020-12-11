@@ -54,7 +54,7 @@
 		out.print("Reservation Type");
 		out.print("</td>");
 		out.print("</tr>");
-		for(int i = 0; i<resList.length;i++) {
+		for(int i = 0; i < resList.length;i++) {
 			if(!(resList[i][5].equals(temp))){
 				out.print("</table>");
 				out.print("<br>");

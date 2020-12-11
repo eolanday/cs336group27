@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1" import="com.cs336group27.pkg.EmployeeLoginServlet"%>
+    pageEncoding="ISO-8859-1" import="com.cs336group27.pkg.*" %>
+    <%@page import="com.cs336group27.model.*"%>  
 <!DOCTYPE html>
 <html>
 <head>
