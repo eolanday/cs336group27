@@ -38,18 +38,48 @@ public class EmployeeLoginServlet extends HttpServlet {
 		doGet(request, response);
 		Employee emp = new Employee();
 		emp.setEmployeeID(Integer.parseInt(request.getParameter("eid")));
-		emp.setName(request.getParameter("uname"));
+		emp.setUsername(request.getParameter("uname"));
 		emp.setPassword(request.getParameter("psw"));
-		int checkLogin=appDB.employeeLoginCheck(emp.getName(), emp.getPassword(),emp.getEmployeeID());
+		int checkLogin=appDB.employeeLoginCheck(emp.getUsername(), emp.getPassword(),emp.getEmployeeID());
 		if (checkLogin == 1) {
 			HttpSession session = request.getSession();
 			Integer count = (Integer)session.getAttribute("COUNT");
 			if(count == null) {
-				count = new Integer (1);
-				session.setAttribute("COUNT", count);
-				session.setAttribute("employee",emp);
-				RequestDispatcher rd = request.getRequestDispatcher("employeeHomepage.jsp");
-				rd.forward(request, response);
+				String empType = appDB.employeeIsAdmin(emp.getUsername(), emp.getPassword(), emp.getEmployeeID());
+				String[] empInfo = appDB.employeeInfo(emp.getEmployeeID());
+				emp.setName(empInfo[0], empInfo[1]);
+				if (request.getParameter("login").equals("admin")) {
+					if(empInfo[2].equals("Yes")) {
+						count = new Integer (1);
+						session.setAttribute("COUNT", count);
+						session.setAttribute("employee",emp);
+						RequestDispatcher rd = request.getRequestDispatcher("adminHomepage.jsp");
+						rd.forward(request, response);
+					}else {
+						String message = "Login Failed. Unauthorized.";
+						request.setAttribute("message", message);
+						RequestDispatcher rd = request.getRequestDispatcher("employeeLogin.jsp");
+						rd.forward(request, response);
+					}
+				}else if(request.getParameter("login").equals("cusRep")) {
+					if(empInfo[3].equals("Yes")) {
+						count = new Integer (1);
+						session.setAttribute("COUNT", count);
+						session.setAttribute("employee",emp);
+						RequestDispatcher rd = request.getRequestDispatcher("cusRepHomepage.jsp");
+						rd.forward(request, response);
+					}else {
+						String message = "Login Failed. Unauthorized.";
+						request.setAttribute("message", message);
+						RequestDispatcher rd = request.getRequestDispatcher("employeeLogin.jsp");
+						rd.forward(request, response);
+					}
+				}else {
+					String message = "Login Failed. Unknown Error.";
+					request.setAttribute("message", message);
+					RequestDispatcher rd = request.getRequestDispatcher("employeeLogin.jsp");
+					rd.forward(request, response);
+				}
 			}else {
 				String message = "Login Failed. Employee is Already Signed In.";
 				request.setAttribute("message", message);
