@@ -53,28 +53,14 @@
 	<h3>Search for train schedules!</h3>
 	<br>
 	<form action="scheduleSearchServlet" method='post'>
-		<div>
-			<input type="radio" id="origin" name="searchType" value="origin">
-			<label for="origin">Origin</label>
-		</div>
-		<div>
-			<input type="radio" id="destination" name="searchType" value="destination">
-			<label for="destination">Destination</label>
-		</div>
-		<div>
-			<input type="radio" id="travelDate" name="searchType" value="origin">
-			<label for="origin">Travel Date</label>
-		</div>
-			<input type="submit" value="Reorder">
-			
-		<div>
-			<input type="text" name="searchParam" class="form-control" placeholder="Search by * select above *">
-			<!-- Click button to start search -->
-			<button type="submit" name="save" class="btn btn-primary">Search</button>
-		</div>
-	</form> 
-		
-		
 
+		Origin: <input type="text" name="origin">
+		<br />
+		Destination: <input type="text" name="destination">
+		<br />
+		Travel Date: <input type="text" name="travelDate">
+		<br /> 
+		<input type = "submit" value = "Submit" />
+	</form>		
 </body>
 </html>

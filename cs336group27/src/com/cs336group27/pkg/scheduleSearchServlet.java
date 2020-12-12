@@ -38,7 +38,9 @@ public class scheduleSearchServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);
-		request.setAttribute("type", request.getParameter("searchParam"));
+		request.setAttribute("origin", request.getParameter("origin"));
+		request.setAttribute("destination", request.getParameter("destination"));
+		request.setAttribute("travelDate", request.getParameter("travelDate"));
 		RequestDispatcher rd = request.getRequestDispatcher("searchSchedule.jsp");
 		rd.forward(request, response);
 	}
