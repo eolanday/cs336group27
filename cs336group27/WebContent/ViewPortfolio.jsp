@@ -12,10 +12,10 @@
 </head>
 <h1>${cust.getName()}'s Reservation Portfolio</h1>
 <body>
+<% 
 	ApplicationDB appDB = new ApplicationDB();
-	String[][] resList = appDB.getPortfolio((String)request.getAttribute("type"));
-	String temp = resList[0][5];
-		out.print("<p>Customer Name:"+resList[0][7]+" "+resList[0][8]+"</p>");
+	String[][] resList = appDB.getPortfolio((String)request.getAttribute("currentUser"));
+		out.print("<p>Customer Name:"+resList[0][6]+" "+resList[0][7]+"</p>");
 		out.print("<table>");
 		out.print("<tr>");
 		out.print("<td>");
@@ -38,32 +38,6 @@
 		out.print("</td>");
 		out.print("</tr>");
 		for(int i = 0; i < resList.length;i++) {
-	    	if(!(resList[i][5].equals(temp))){
-				out.print("</table>");
-				out.print("<br>");
-				out.print("<p>Customer Name:"+resList[i][7]+" "+resList[i][8]+"</p>");
-				out.print("<table>");
-				out.print("<tr>");
-				out.print("<td>");
-				out.print("Reservation Number");
-				out.print("</td>");
-				out.print("<td>");
-				out.print("Reservation Date");
-				out.print("</td>");
-				out.print("<td>");
-				out.print("Total Fare");
-				out.print("</td>");
-				out.print("<td>");
-				out.print("Train ID");
-				out.print("</td>");
-				out.print("<td>");
-				out.print("scheduleID");
-				out.print("</td>");
-				out.print("<td>");
-				out.print("Reservation Type");
-				out.print("</td>");
-				out.print("</tr>");
-			}
 			out.print("<tr>");
 			out.print("<td>");
 			out.print(resList[i][0]);
@@ -81,10 +55,54 @@
 			out.print(resList[i][4]);
 			out.print("</td>");
 			out.print("<td>");
-			out.print(resList[i][6]);
+			out.print(resList[i][5]);
 			out.print("</td>");
 			out.print("</tr>");
 		}
+	
+	out.print("</table>");
+	%>
+	
+	<br>
+	<br>
+	<h2>Would you like to cancel a reservation?</h2>
+	<!-- Cancel a Reservation -->
+	
+	
+	<br>
+	<form action = "resDeleteConfirm.jsp">
+		<label for="res_num"><b>Reservation Number:</b></label>
+		<select name="res_num" id = "res1">		
+		<%
+			String temp = "";
+			for(int i = 0; i<resList.length ; i++){
+				temp = "<option value='".concat(resList[i][0]).concat("'>").concat(resList[i][0]).concat("</option>");
+				out.print(temp);
+				System.out.println(temp);
+			}
+		%>
+		</select>
+		<br><br>
+		<div class="container" id="delete">
+		<input type="submit" value = "Cancel Reservation">
+	</div>
+	</form>
+	
+	
+	
+	<!--
+	<br>
+	<form action="CusDeleteReservation" method = "post">
+		<label for="res_num"><b>Input the reservation number.</b></label>
+		<input type="number" placeholder="Reservation Number" name="res_num" required>
+		
+		<div class="container" id="cancelResButton">
+			<button type="submit">Cancel Reservation</button>
+		</div>
+	</form>
+	-->
+	
+	<br>
 	<br>
 	<form action="loginGood.jsp">
 		<br>

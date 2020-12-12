@@ -484,15 +484,17 @@ public class ApplicationDB {
 			SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
 			ApplicationDB db = new ApplicationDB();	
 			Connection con = db.getConnection();
-			String check = "select * from Reservations res inner join Customers cust on res.customerid = cust.customerID where cust.username = " + user + " order by res.reservation_date;";
-			
-			String preCount = "select count(*) tupleCount from Reservations";
+			String check = "select * from Reservations res inner join Customers cust on res.customerid = cust.customerID where cust.username = (?) order by res.reservation_date;";
+			String s = "Reservations res inner join Customers cust on res.customerid = cust.customerID where cust.username = (?) order by res.reservation_date;";
+			String preCount = "select count(*) tupleCount from " + s;
 			PreparedStatement ps1 = con.prepareStatement(check);
 			PreparedStatement ps2 = con.prepareStatement(preCount);
+			ps1.setString(1, user);
+			ps2.setString(1, user);
 			ResultSet rs1 = ps1.executeQuery();
 			ResultSet rs2 = ps2.executeQuery();
 			rs2.next();
-			String[][] resList = new String[rs2.getInt("tupleCount")][9];
+			String[][] resList = new String[rs2.getInt("tupleCount")][8];
 			int arrayCount  = 0;
 			while (rs1.next()) {
 				resList[arrayCount][0]=(Integer.toString(rs1.getInt("reservation_number")));
@@ -500,10 +502,9 @@ public class ApplicationDB {
 				resList[arrayCount][2]=(Integer.toString(rs1.getInt("total_fare")));
 				resList[arrayCount][3]=(Integer.toString(rs1.getInt("trainID")));
 				resList[arrayCount][4]=(Integer.toString(rs1.getInt("scheduleID")));
-				resList[arrayCount][5]=(Integer.toString(rs1.getInt("customerid")));
-				resList[arrayCount][6]=((rs1.getString("reservation_type")));
-				resList[arrayCount][7]=((rs1.getString("first_name")));
-				resList[arrayCount][8]=((rs1.getString("last_name")));
+				resList[arrayCount][5]=((rs1.getString("reservation_type")));
+				resList[arrayCount][6]=((rs1.getString("first_name")));
+				resList[arrayCount][7]=((rs1.getString("last_name")));
 				arrayCount++;
 			}
 			con.close();
@@ -512,6 +513,20 @@ public class ApplicationDB {
 			return resList;
 		}catch(Exception e) {
 			System.out.println(e.getMessage());
+			throw e;
+		}
+	}
+	public int deleteReservation(String num) throws Exception {
+		try {
+			ApplicationDB db = new ApplicationDB();	
+			Connection con = db.getConnection();
+			String query = "delete from Reservations where reservation_number = (?)";
+			PreparedStatement ps = con.prepareStatement(query);
+			ps.setString(1, num);
+			int rows = ps.executeUpdate();
+			con.close();
+			return rows;
+		}catch(Exception e) {
 			throw e;
 		}
 	}

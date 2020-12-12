@@ -13,30 +13,22 @@
 <!-- Welcome screen for successful customer logins -->
 <h1>Welcome ${cust.getName()}!</h1>
 <body>
-
 	<br>
-	<p>Would you like to make a reservation?</p>
+	<br>
+	<h3>Would you like to make a reservation?</h3>
 	<!-- Make a Reservation -->
-	<form action="CusMakeReservation.jsp">
+	<form action="CusMakeReservation.jsp" method = "post">
 		<div class="container" id="makeResButton">
 			<button type="submit">Make Reservation</button>
 		</div>
 	</form>
 	<br>
-	
-	<p>Would you like to cancel a reservation?</p>
-	<!-- Cancel a Reservation -->
-	<form action="CusDeleteReservation" method = "post">
-		<div class="container" id="cancelResButton">
-			<button type="submit">Cancel Reservation</button>
-		</div>
-	</form>
 	<br>
-	
 	<h3>View Your Reservation Portfolio</h3>
 	<!-- Reservation Portfolio-->
 	<form action="ViewPortfolio" method = "post">
 		<div class="container" id="viewPortfolioButton">
+			<input type = "hidden" id = "user" name = "user" value = ${cust.getName()} >
 			<button type="submit">View Portfolio</button>
 		</div>
 	</form>
