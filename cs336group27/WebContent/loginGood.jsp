@@ -36,11 +36,23 @@
 	
 	<br>
 	<form action="LogoutServlet" method="post">
-	<div class="container" id="logout">
-		<!-- Click button to log out of account -->
-		<button type="submit">Logout</button>
-	</div>
+		<div class="container" id="logout">
+			<!-- Click button to log out of account -->
+			<button type="submit">Logout</button>
+		</div>
+	</form>
+		
+	<h3>Search for train schedules!</h3>
+	<br>
+	<form action="scheduleSearchServlet" method='post'>
 
-</form>
+		Origin: <input type="text" name="origin">
+		<br />
+		Destination: <input type="text" name="destination">
+		<br />
+		Travel Date: <input type="text" name="travelDate">
+		<br /> 
+		<input type = "submit" value = "Submit" />
+	</form>		
 </body>
 </html>
