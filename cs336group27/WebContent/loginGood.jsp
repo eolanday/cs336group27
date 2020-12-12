@@ -62,7 +62,7 @@
 			<label for="destination">Destination</label>
 		</div>
 		<div>
-			<input type="radio" id="travelDate" name="searchType" value="origin">
+			<input type="radio" id="travelDate" name="searchType" value="travelDate">
 			<label for="origin">Travel Date</label>
 		</div>
 			<input type="submit" value="Reorder">

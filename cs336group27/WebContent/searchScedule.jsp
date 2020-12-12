@@ -9,9 +9,20 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>Schedule Search</title>
 </head>
 <body>
-
+	<header>
+		<h1>Welcome to the Train Reservation System #27</h1>
+		<h2>Customer Page</h2>
+		<h3>Train Schedule</h3>
+	</header>
+	
+	
+	<!-- Java Code -->
+	<%
+		ApplicationDB appDB = new ApplicationDB();
+		String[][] resList = appDB.getRevenueList((String)request.getAttribute("type"));
+	%>
 </body>
 </html>
