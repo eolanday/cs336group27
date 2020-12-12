@@ -72,7 +72,7 @@
 			<!-- Click button to start search -->
 			<button type="submit" name="save" class="btn btn-primary">Search</button>
 		</div>
-	</form>
+	</form> 
 		
 		
 
