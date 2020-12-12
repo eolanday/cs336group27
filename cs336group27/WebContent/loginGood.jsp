@@ -44,11 +44,33 @@
 	
 	<br>
 	<form action="LogoutServlet" method="post">
-	<div class="container" id="logout">
-		<!-- Click button to log out of account -->
-		<button type="submit">Logout</button>
-	</div>
+		<div class="container" id="logout">
+			<!-- Click button to log out of account -->
+			<button type="submit">Logout</button>
+		</div>
+	</form>
+		
+	
+	<br>
+	<form action="scheduleSearchServlet" method='post'>
+		<div>
+			<input type="radio" id="origin" name="searchType" value="origin">
+			<label for="origin">Origin</label>
+		</div>
+		<div>
+			<input type="radio" id="destination" name="searchType" value="destination">
+			<label for="destination">Destination</label>
+		</div>
+			<input type="submit" value="Reorder">
+			
+		<div>
+			<input type="text" name="searchParam" class="form-control" placeholder="Search by origin">
+			<!-- Click button to start search -->
+			<button type="submit" name="save" class="btn btn-primary">Search</button>
+		</div>
+	</form>
+		
+		
 
-</form>
 </body>
 </html>
