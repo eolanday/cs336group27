@@ -66,7 +66,7 @@ public class EmployeeLoginServlet extends HttpServlet {
 						count = new Integer (1);
 						session.setAttribute("COUNT", count);
 						session.setAttribute("employee",emp);
-						RequestDispatcher rd = request.getRequestDispatcher("cusRepHomepage.jsp");
+						RequestDispatcher rd = request.getRequestDispatcher("custRepHomepage.jsp");
 						rd.forward(request, response);
 					}else {
 						String message = "Login Failed. Unauthorized.";

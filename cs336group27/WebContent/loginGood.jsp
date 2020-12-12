@@ -53,6 +53,7 @@
 	<h3>Search for train schedules!</h3>
 	<br>
 	<form action="scheduleSearchServlet" method='post'>
+
 		Origin: <input type="text" name="origin">
 		<br />
 		Destination: <input type="text" name="destination">
@@ -60,9 +61,6 @@
 		Travel Date: <input type="text" name="travelDate">
 		<br /> 
 		<input type = "submit" value = "Submit" />
-	</form>
-		
-		
-
+	</form>		
 </body>
 </html>
