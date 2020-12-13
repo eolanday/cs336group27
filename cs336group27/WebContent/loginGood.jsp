@@ -38,7 +38,7 @@
 		
 	<h3>Search for train schedules!</h3>
 	<br>
-	<form action="scheduleSearchServlet" method='post'>
+	<form action="scheduleSearchServlet.java" method='post'>
 
 		Origin: <input type="text" name="origin">
 		<br />
