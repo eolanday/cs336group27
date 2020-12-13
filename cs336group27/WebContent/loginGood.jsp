@@ -35,12 +35,6 @@
 	<br>
 	
 	<br>
-	<form action="LogoutServlet" method="post">
-		<div class="container" id="logout">
-			<!-- Click button to log out of account -->
-			<button type="submit">Logout</button>
-		</div>
-	</form>
 		
 	<h3>Search for train schedules!</h3>
 	<br>
@@ -54,5 +48,14 @@
 		<br /> 
 		<input type = "submit" value = "Submit" />
 	</form>		
+	
+	
+	<br>
+	<form action="LogoutServlet" method="post">
+		<div class="container" id="logout">
+			<!-- Click button to log out of account -->
+			<button type="submit">Logout</button>
+		</div>
+	</form>
 </body>
 </html>

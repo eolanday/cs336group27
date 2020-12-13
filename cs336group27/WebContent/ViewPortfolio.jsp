@@ -70,9 +70,9 @@
 	
 	
 	<br>
-	<form action = "resDeleteConfirm.jsp">
+	<form action = "resDeleteConfirm.jsp" method = "post">
 		<label for="res_num"><b>Reservation Number:</b></label>
-		<select name="res_num" id = "res1">		
+		<select name="res_num" id = "res_num">		
 		<%
 			String temp = "";
 			for(int i = 0; i<resList.length ; i++){
@@ -83,9 +83,9 @@
 		%>
 		</select>
 		<br><br>
-		<div class="container" id="delete">
-		<input type="submit" value = "Cancel Reservation">
-	</div>
+	<div class="container" id="cancelResButton">
+			<button type="submit">Cancel Reservation</button>
+		</div>
 	</form>
 	
 	

@@ -530,7 +530,6 @@ public class ApplicationDB {
 			throw e;
 		}
 	}
-	
 	public String[][] getTrainSchedule(String origin, String destination, String travelDate) throws Exception{
 		try {	
 			SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");

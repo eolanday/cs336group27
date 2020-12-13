@@ -8,21 +8,18 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 
 /**
- * Servlet implementation class ViewPortfolio
+ * Servlet implementation class CusGetResNum
  */
-@WebServlet("/ViewPortfolio")
-public class ViewPortfolio extends HttpServlet {
+@WebServlet("/CusGetResNum")
+public class CusGetResNum extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public ViewPortfolio() {
+    public CusGetResNum() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -41,8 +38,8 @@ public class ViewPortfolio extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);
-		request.setAttribute("currentUser", request.getParameter("user"));
-		RequestDispatcher rd = request.getRequestDispatcher("ViewPortfolio.jsp");
+		request.setAttribute("resnum", request.getParameter("res_num"));
+		RequestDispatcher rd = request.getRequestDispatcher("resDeleteConfirm.jsp");
 		rd.forward(request, response);
 	}
 
