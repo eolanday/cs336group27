@@ -23,7 +23,6 @@
 	<%
 		ApplicationDB appDB = new ApplicationDB();
 		String[][] resList = appDB.getTrainSchedule((String)request.getAttribute("origin"), (String)request.getAttribute("destination"), (String)request.getAttribute("travelDate"));
-		System.out.println(resList);
 		out.print("<p>Train Schedule</p>");
 		out.print("<table>");
 		out.print("<tr>");
