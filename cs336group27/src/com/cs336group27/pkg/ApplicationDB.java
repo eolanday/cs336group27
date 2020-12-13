@@ -530,6 +530,48 @@ public class ApplicationDB {
 			throw e;
 		}
 	}
+	//NOT STARTED YET
+	public int getDiscount(String cus) throws Exception {
+		try {
+			SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+			ApplicationDB db = new ApplicationDB();	
+			Connection con = db.getConnection();
+			String check = "";
+			if(cus.equals("0-17")) {
+				check = "select * from Reservations res inner join Customers cust on res.customerid = cust.customerID order by cust.customerID;";
+			}else {
+				//(by.equals("transit"))
+				check = "select * from Reservations res inner join Customers cust on res.customerid = cust.customerID order by res.scheduleID;";
+			}
+			String preCount = "select count(*) tupleCount from Reservations";
+			PreparedStatement ps1 = con.prepareStatement(check);
+			PreparedStatement ps2 = con.prepareStatement(preCount);
+			ResultSet rs1 = ps1.executeQuery();
+			ResultSet rs2 = ps2.executeQuery();
+			rs2.next();
+			String[][] resList = new String[rs2.getInt("tupleCount")][9];
+			int arrayCount  = 0;
+			while (rs1.next()) {
+				resList[arrayCount][0]=(Integer.toString(rs1.getInt("reservation_number")));
+				resList[arrayCount][1]=(formatter.format(rs1.getDate("reservation_date")));
+				resList[arrayCount][2]=(Integer.toString(rs1.getInt("total_fare")));
+				resList[arrayCount][3]=(Integer.toString(rs1.getInt("trainID")));
+				resList[arrayCount][4]=(Integer.toString(rs1.getInt("scheduleID")));
+				resList[arrayCount][5]=(Integer.toString(rs1.getInt("customerid")));
+				resList[arrayCount][6]=((rs1.getString("reservation_type")));
+				resList[arrayCount][7]=((rs1.getString("first_name")));
+				resList[arrayCount][8]=((rs1.getString("last_name")));
+				arrayCount++;
+			}
+			con.close();
+			rs1.close();
+			rs2.close();
+			return arrayCount;
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+			throw e;
+		}
+	}
 	public String[][] getTrainSchedule(String origin, String destination, String travelDate) throws Exception{
 		try {	
 			SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");

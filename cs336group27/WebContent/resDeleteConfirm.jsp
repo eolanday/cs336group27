@@ -17,7 +17,7 @@
 <div class="container" id="resDeleteConfirmButton">
 			<label for = "resDeleteConfirm">Are You Sure?<br></label>
 			<input type = "hidden" id = "res_num" name = "res_num" value = <%out.print(num);%>>
-			<button type="submit">Yes</button>${message}
+			<button type="submit">Yes</button><br>${message}
 		</div></form>
 
 <br>

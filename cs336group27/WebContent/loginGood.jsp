@@ -12,6 +12,7 @@
 
 <!-- Welcome screen for successful customer logins -->
 <h1>Welcome ${cust.getName()}!</h1>
+<h2>Customer Homepage</h2>
 <body>
 	<br>
 	<br>
@@ -37,7 +38,6 @@
 	<br>
 		
 	<h3>Search for train schedules!</h3>
-	<br>
 	<form action="scheduleSearchServlet.java" method='post'>
 
 		Origin: <input type="text" name="origin">
@@ -49,7 +49,7 @@
 		<input type = "submit" value = "Submit" />
 	</form>		
 	
-	
+	<br>
 	<br>
 	<form action="LogoutServlet" method="post">
 		<div class="container" id="logout">
