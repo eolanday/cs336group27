@@ -34,7 +34,7 @@
 </form>
 <form action="employeeLogin.jsp">
 	<br>
-	<input type="submit" value="Employeee Login">
+	<input type="submit" value="Employee Login">
 </form>
 <!-- Create Account: Create an Account by clicking the button -->
 <form action="createUser.jsp">
