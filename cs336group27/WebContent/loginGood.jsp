@@ -35,6 +35,15 @@
 	</form>
 	<br>
 	
+	<p>Have an issue? Browse or ask a question.</p>
+	<!-- Cancel a Reservation -->
+	<form action="custQuestion.jsp">
+		<div class="container" id="questionB">
+			<button type="submit">Browse and Ask Questions</button>
+		</div>
+	</form>
+	<br>
+	
 	<br>
 		
 	<h3>Search for train schedules!</h3>
