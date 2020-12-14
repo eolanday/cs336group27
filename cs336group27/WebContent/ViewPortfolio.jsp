@@ -15,26 +15,26 @@
 <% 
 	ApplicationDB appDB = new ApplicationDB();
 	String[][] resList = appDB.getPortfolio((String)request.getAttribute("currentUser"));
-		out.print("<p>Customer Name:"+resList[0][6]+" "+resList[0][7]+"</p>");
+		out.print("<p><b>Customer Name</b>: "+resList[0][6]+" "+resList[0][7]+"</p>");
 		out.print("<table>");
 		out.print("<tr>");
 		out.print("<td>");
-		out.print("Reservation Number");
+		out.print("<b>Reservation Number</b>");
 		out.print("</td>");
 		out.print("<td>");
-		out.print("Reservation Date");
+		out.print("<b>Reservation Date</b>");
 		out.print("</td>");
 		out.print("<td>");
-		out.print("Total Fare");
+		out.print("<b>Total Fare</b>");
 		out.print("</td>");
 		out.print("<td>");
-		out.print("Train ID");
+		out.print("<b>Train ID</b>");
 		out.print("</td>");
 		out.print("<td>");
-		out.print("scheduleID");
+		out.print("<b>scheduleID</b>");
 		out.print("</td>");
 		out.print("<td>");
-		out.print("Reservation Type");
+		out.print("<b>Reservation Type</b>");
 		out.print("</td>");
 		out.print("</tr>");
 		for(int i = 0; i < resList.length;i++) {
@@ -65,42 +65,25 @@
 	
 	<br>
 	<br>
-	<h2>Would you like to cancel a reservation?</h2>
 	<!-- Cancel a Reservation -->
-	
-	
-	<br>
-	<form action = "resDeleteConfirm.jsp">
-		<label for="res_num"><b>Reservation Number:</b></label>
-		<select name="res_num" id = "res1">		
-		<%
-			String temp = "";
-			for(int i = 0; i<resList.length ; i++){
-				temp = "<option value='".concat(resList[i][0]).concat("'>").concat(resList[i][0]).concat("</option>");
-				out.print(temp);
-				System.out.println(temp);
-			}
-		%>
-		</select>
-		<br><br>
-		<div class="container" id="delete">
-		<input type="submit" value = "Cancel Reservation">
-	</div>
-	</form>
-	
-	
-	
-	<!--
-	<br>
-	<form action="CusDeleteReservation" method = "post">
-		<label for="res_num"><b>Input the reservation number.</b></label>
-		<input type="number" placeholder="Reservation Number" name="res_num" required>
+	<label style="font-weight: bold;" for="deleteResForm">Would you like to cancel a reservation?</label>
+		<form action = "resDeleteConfirm.jsp" method = "post" name = "deleteResForm">
+			<div class="container" id="cancelResButton">
 		
-		<div class="container" id="cancelResButton">
+				<label for="res_num">Reservation Number:</label>
+				<select name="res_num" id = "res_num">		
+				<%
+					String temp = "";
+					for(int i = 0; i<resList.length ; i++){
+						temp = "<option value='".concat(resList[i][0]).concat("'>").concat(resList[i][0]).concat("</option>");
+						out.print(temp);
+						System.out.println(temp);
+					}
+				%>
+				</select>
 			<button type="submit">Cancel Reservation</button>
-		</div>
-	</form>
-	-->
+			</div>
+		</form>
 	
 	<br>
 	<br>

@@ -10,8 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.cs336group27.model.*;
-
 
 /**
  * Servlet implementation class ViewPortfolio
@@ -43,7 +41,6 @@ public class ViewPortfolio extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);
-		Customer cust = new Customer();
 		request.setAttribute("currentUser", request.getParameter("user"));
 		RequestDispatcher rd = request.getRequestDispatcher("ViewPortfolio.jsp");
 		rd.forward(request, response);
