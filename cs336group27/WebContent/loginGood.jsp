@@ -35,7 +35,7 @@
 	</form>
 	<br>
 	
-	<p>Have an issue? Browse or ask a question.</p>
+	<h4>Have an issue? Browse or ask a question.</h4>
 	<!-- Cancel a Reservation -->
 	<form action="custQuestion.jsp">
 		<div class="container" id="questionB">

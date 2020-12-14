@@ -1,10 +1,13 @@
 package com.cs336group27.pkg;
 import java.io.*;
+import java.math.RoundingMode;
 import java.util.*;
 import java.sql.*;
 import java.sql.Date;
 
 import javax.servlet.http.*;
+
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import javax.servlet.*;
 
@@ -578,10 +581,13 @@ public class ApplicationDB {
 			}else if(age.equals("65+")){
 				fare *= 0.65f;
 			}
-			if(!(disabled.equals(null))) {
-				fare *= 0.50f;
+			if(!(disabled == null)) {
+				fare *= 0.50f;			
 			}
-			
+			DecimalFormat df = new DecimalFormat("#.##");
+			df.setRoundingMode(RoundingMode.CEILING);
+			String f = df.format(fare);
+			fare = Float.parseFloat(f);
 			con.close();
 			rs.close();
 			rsa.close();
@@ -656,7 +662,6 @@ public int createReservation(String origin, String dest, String date, String tim
 			return -1;
 		}
 	}
-	
 	public String[][] getTrainSchedule(String origin, String destination, String travelDate) throws Exception{
 		try {	
 			SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");

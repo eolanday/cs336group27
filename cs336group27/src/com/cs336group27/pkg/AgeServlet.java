@@ -1,6 +1,8 @@
 package com.cs336group27.pkg;
 
 import java.io.IOException;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -48,7 +50,7 @@ public class AgeServlet extends HttpServlet {
 			String date = (String)request.getParameter("resdate");
 			String time = (String)request.getParameter("restime");
 			String user = (String)request.getParameter("user");
-			request.setAttribute("type", "listType");
+			request.setAttribute("type", request.getParameter("listType"));
 			String type = (String)request.getAttribute("type");
 			String age = (String)request.getParameter("age");
 			String disabled = (String)request.getParameter("disableConfirm");
@@ -65,16 +67,12 @@ public class AgeServlet extends HttpServlet {
 					request.setAttribute("message", message);
 			 }
 			 // Disability Discount
-			 if(disabled == null) {
-					String message1 = "";
-					request.setAttribute("message1", message1);
-			 } else {
+			 if(!(disabled == null)) {
 					String message1 = "Disabled: 50% Discount";
 					request.setAttribute("message1", message1);
 				}
 			 
 			 //Ticket Type
-				request.setAttribute("type", request.getParameter("listType"));
 				if(request.getAttribute("type").equals("one_way")) {
 					String message2 = "One Way Ticket";
 					request.setAttribute("message2", message2);
@@ -97,7 +95,10 @@ public class AgeServlet extends HttpServlet {
 				// Calculate Fare
 				float fare = appDB.calculateFare(origin, dest, date, type, age, disabled);
 				if(fare > 0) {
-					String message4 = "Your total fare is: $" + fare;
+					DecimalFormat df = new DecimalFormat("#.##");
+					df.setRoundingMode(RoundingMode.CEILING);
+					    String f = df.format(fare);
+					String message4 = "Your total fare is: $" + f;
 					request.setAttribute("message4", message4);
 				 }else {
 					String message4 = "Cannot calculate fare";
