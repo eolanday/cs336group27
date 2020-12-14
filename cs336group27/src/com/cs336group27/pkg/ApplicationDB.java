@@ -651,7 +651,7 @@ public int createReservation(String origin, String dest, String date, String tim
 			ApplicationDB db = new ApplicationDB();	
 			Connection con = db.getConnection();
 			String query = "SELECT * FROM trainsys1.Trains t where t.origin = '"+origin+"' and t.destination = '"+destination+"' and t.travelDate = '"+travelDate+"';";
-			String count = "SELECT COUNT(*) FROM trainsys1.Trains t where t.origin = '"+origin+"' and t.destination = '"+destination+"' and t.travelDate = '"+travelDate+"';";
+			String count = "SELECT COUNT(*) tuplesCount FROM trainsys1.Trains t where t.origin = '"+origin+"' and t.destination = '"+destination+"' and t.travelDate = '"+travelDate+"';";
 			PreparedStatement ps1 = con.prepareStatement(query);
 			PreparedStatement ps2 = con.prepareStatement(count);
 			ResultSet rs1 = ps1.executeQuery();
@@ -676,4 +676,309 @@ public int createReservation(String origin, String dest, String date, String tim
 		}
 	}
 	
+	public String[][] getTrainSchedules(String key) throws Exception {
+        try {
+            ApplicationDB db = new ApplicationDB(); 
+            Connection con = db.getConnection();
+            key = key == null ? "":key;
+            String check = "SELECT * FROM Train_Schedule" + (key == "" ? "": (" where origin='" + key + "' or destination='" + key +"'"));
+            String preCount = "select count(*) tupleCount from Train_Schedule" + (key == "" ? "": (" where origin='" + key + "' or destination='" + key +"'"));
+            PreparedStatement ps1 = con.prepareStatement(check);
+            PreparedStatement ps2 = con.prepareStatement(preCount);
+            ResultSet rs1 = ps1.executeQuery();
+            ResultSet rs2 = ps2.executeQuery();
+            rs2.next();
+            String[][] resList = new String[rs2.getInt("tupleCount")][8];
+            int arrayCount  = 0;
+            while (rs1.next()) {
+                resList[arrayCount][0]=(rs1.getString("transitLine"));
+                resList[arrayCount][1]=(Integer.toString(rs1.getInt("scheduleID")));
+                resList[arrayCount][2]=(Integer.toString(rs1.getInt("trainID")));
+                resList[arrayCount][3]=(Integer.toString(rs1.getInt("travel_time")));
+                resList[arrayCount][4]=(Double.toString(Math.round(rs1.getFloat("fare") * 100.0) / 100.0));
+                resList[arrayCount][5]=(rs1.getDate("travelDate").toString());
+                resList[arrayCount][6]=(rs1.getString("origin"));
+                resList[arrayCount][7]=(rs1.getString("destination"));
+                arrayCount++;
+            }
+            con.close();
+            rs1.close();
+            rs2.close();
+            return resList;
+        }catch(Exception e) {
+            System.out.println(e.getMessage());
+            throw e;
+        }
+    }
+	public boolean addTrainSchedule(String tline, String fare, String trainID, String tdate) throws Exception {
+        try {
+            ApplicationDB db = new ApplicationDB(); 
+            Connection con = db.getConnection();
+            
+            String add = "INSERT INTO Train_Schedule (`transitLine`,`travel_time`,`fare`,`trainID`,`travelDate`) "
+                    + "VALUES('" + tline + "',0," + fare +  "," + trainID + ",'" + tdate + "')";
+            PreparedStatement ps1 = con.prepareStatement(add);
+            ps1.execute();
+            con.close();
+            
+            con = db.getConnection();
+            String update = "select scheduleID, transitLine from Train_Schedule where destination is NULL;";
+            String precount = "select count(*) tupleCount from Train_Schedule where destination is NULL;";
+            PreparedStatement ps2 = con.prepareStatement(update);
+            PreparedStatement ps3 = con.prepareStatement(precount);
+            ResultSet rs1 = ps2.executeQuery();
+            ResultSet rs2 = ps3.executeQuery();
+            rs2.next();
+            String[][] resList = new String[rs2.getInt("tupleCount")][2];
+            int arrayCount  = 0;
+            while (rs1.next()) {
+                resList[arrayCount][0] = rs1.getString("scheduleID");
+                resList[arrayCount][1] = rs1.getString("transitLine");
+                arrayCount++;
+            }
+            con.close();
+            
+            for(int i = 0; i < resList.length; i++) {
+                this.autoUpdateTrainSchedule(resList[i][0], resList[i][1]);
+            }
+            
+            return true;
+        }catch(Exception e) {
+            System.out.println(e.getMessage());
+            throw e;
+        }
+    }
+	public boolean deleteTrainSchedule(String sid) throws Exception {
+        try {
+            ApplicationDB db = new ApplicationDB(); 
+            Connection con = db.getConnection();
+            
+            String add = "delete from Train_Schedule where scheduleID=" + sid + ";";
+            PreparedStatement ps1 = con.prepareStatement(add);
+            ps1.execute();
+            con.close();
+            return true;
+        }catch(Exception e) {
+            System.out.println(e.getMessage());
+            throw e;
+        }
+    }
+	public boolean updateTrainSchedule(String sid, String tline, String fare, String trainID, String tdate) throws Exception {
+        try {
+            ApplicationDB db = new ApplicationDB(); 
+            Connection con = db.getConnection();
+            
+            if(!tline.equals("")) {
+                String add = "update Train_Schedule set transitLine='" + tline + "' where scheduleID=" + sid + ";";
+                PreparedStatement ps1 = con.prepareStatement(add);
+                ps1.execute();
+            }
+            
+            if(!fare.equals("")) {
+                String add = "update Train_Schedule set fare=" + fare + " where scheduleID=" + sid + ";";
+                PreparedStatement ps1 = con.prepareStatement(add);
+                ps1.execute();
+            }
+            
+            if(!trainID.equals("")) {
+                String add = "update Train_Schedule set trainID=" + trainID + " where scheduleID=" + sid + ";";
+                PreparedStatement ps1 = con.prepareStatement(add);
+                ps1.execute();
+            }
+            
+            if(!tdate.equals("")) {
+                String add = "update Train_Schedule set travelDate=;" + trainID + "' where scheduleID=" + sid + ";";
+                PreparedStatement ps1 = con.prepareStatement(add);
+                ps1.execute();
+            }
+            
+            con.close();
+            this.autoUpdateTrainSchedule(sid,tline);
+            return true;
+        }catch(Exception e) {
+            System.out.println(e.getMessage());
+            throw e;
+        }
+    }
+	private boolean autoUpdateTrainSchedule(String sid, String tline) throws Exception {
+        try {
+            ApplicationDB db = new ApplicationDB();
+            Connection con = db.getConnection();
+            
+            String check = "select * from Stops where transitLine='" + tline + "' order by arrival_time asc;";
+            String preCount = "select count(*) tupleCount from Stops where transitLine='" + tline + "';";
+            PreparedStatement ps1 = con.prepareStatement(check);
+            PreparedStatement ps2 = con.prepareStatement(preCount);
+            ResultSet rs1 = ps1.executeQuery();
+            ResultSet rs2 = ps2.executeQuery();
+            rs2.next();
+            Time[] resList = new Time[rs2.getInt("tupleCount")];
+            String[] resList2 = new String[rs2.getInt("tupleCount")];
+            int arrayCount  = 0;
+            while (rs1.next()) {
+                resList[arrayCount] = rs1.getTime("arrival_time");
+                resList2[arrayCount] = rs1.getString("stationName");
+                arrayCount++;
+            }
+            rs1.close();
+            rs2.close();
+            
+            long time = Math.abs(resList[0].getTime() - resList[resList.length-1].getTime()) / 60000;
+            String stime = Integer.toString((int)time);
+            
+            String update = "update Train_Schedule set travel_time=" + stime + ", origin='" + resList2[0] + "', destination='" +
+                    resList2[resList2.length-1] + "' where scheduleID=" + sid + ";";
+            PreparedStatement ps3 = con.prepareStatement(update);
+            ps3.execute();
+            con.close();
+            return true;
+        }catch(Exception e) {
+            System.out.println(e.getMessage());
+            throw e;
+        }
+    }
+	public String[][] getQuestions(String keyword) throws Exception {
+        try {
+            ApplicationDB db = new ApplicationDB(); 
+            Connection con = db.getConnection();
+            keyword = keyword == null ? "":keyword;
+            String check = "select * from Questions where question like \"%" + keyword + "%\";";
+            String preCount = "select count(*) tupleCount from Questions where question like \"%" + keyword + "%\";";
+            PreparedStatement ps1 = con.prepareStatement(check);
+            PreparedStatement ps2 = con.prepareStatement(preCount);
+            ResultSet rs1 = ps1.executeQuery();
+            ResultSet rs2 = ps2.executeQuery();
+            rs2.next();
+            String[][] resList = new String[rs2.getInt("tupleCount")][7];
+            int arrayCount  = 0;
+            while (rs1.next()) {
+                resList[arrayCount][0]=(Integer.toString(rs1.getInt("qid")));
+                resList[arrayCount][1]=(Integer.toString(rs1.getInt("customerID")));
+                resList[arrayCount][2]=(rs1.getObject("employeeID")!=null ? Integer.toString(rs1.getInt("employeeID")):"Not Available");
+                resList[arrayCount][3]=(rs1.getString("question"));
+                resList[arrayCount][4]=(rs1.getObject("reply")!=null ? rs1.getString("reply"):"Not Available");
+                
+                Timestamp temp0 = rs1.getTimestamp("askDate");
+                if(temp0 != null) {
+                    String temp = temp0.toGMTString();
+                    resList[arrayCount][5]=(temp.substring(0, temp.length()-4));
+                } else {
+                    resList[arrayCount][5]="Not Available";
+                }
+                temp0 = rs1.getTimestamp("replyDate");
+                if(temp0 != null) {
+                    String temp = temp0.toGMTString();
+                    resList[arrayCount][6]=(temp.substring(0, temp.length()-4));
+                } else {
+                    resList[arrayCount][6]="Not Available";
+                }
+                arrayCount++;
+            }
+            con.close();
+            rs1.close();
+            rs2.close();
+            return resList;
+        }catch(Exception e) {
+            System.out.println(e.getMessage());
+            throw e;
+        }
+    }
+	public boolean addQuestion(String eid, String question) throws Exception {
+        try {
+            ApplicationDB db = new ApplicationDB(); 
+            Connection con = db.getConnection();
+            
+            String check = "select * from Customers where username='" + eid + "';";
+            PreparedStatement ps2 = con.prepareStatement(check);
+            ResultSet rs2 = ps2.executeQuery();
+            rs2.next();
+            eid = Integer.toString(rs2.getInt("customerID"));
+            rs2.close();
+            con.close();
+            
+            con = db.getConnection();
+            
+            String add = "INSERT INTO Questions (`customerID`,`question`,`askDate`) "
+                    + "VALUES(" + eid + ",'" + question + "', CURRENT_TIMESTAMP());";
+            PreparedStatement ps1 = con.prepareStatement(add);
+            ps1.execute();
+            
+            con.close();
+            return true;
+        }catch(Exception e) {
+            System.out.println(e.getMessage());
+            throw e;
+        }
+    }
+	public boolean replyQuestion(int eid, String qid, String reply) throws Exception {
+        try {
+            ApplicationDB db = new ApplicationDB(); 
+            Connection con = db.getConnection();
+            
+            String add = "update Questions set employeeID=" + eid + ",reply='" + reply + "',replyDate=CURRENT_TIMESTAMP()"
+                    + "where qid=" + qid + ";";
+            PreparedStatement ps1 = con.prepareStatement(add);
+            ps1.execute();
+            
+            con.close();
+            return true;
+        }catch(Exception e) {
+            System.out.println(e.getMessage());
+            throw e;
+        }
+    }
+	public String[][] getRepReservations(String sid, String date) throws Exception {
+	    try {
+            ApplicationDB db = new ApplicationDB(); 
+            Connection con = db.getConnection();
+            
+            String add = "SELECT r.reservation_number, c.customerID, c.first_name, c.last_name, "
+                    + "r.reservation_date, r.total_fare, r.reservation_type, ts.transitLine "
+                    + "FROM Reservations r "
+                    + "join Train_Schedule ts on r.scheduleID=ts.scheduleID "
+                    + "join Customers c on c.customerID=r.customerid";
+            String preCount = "select count(*) tupleCount " 
+                    + "FROM Reservations r "
+                    + "join Train_Schedule ts on r.scheduleID=ts.scheduleID "
+                    + "join Customers c on c.customerID=r.customerid";
+            if(sid != null && !sid.equals("")) {
+                add = add + " where ts.transitLine='" + sid + "'";
+                preCount = preCount + " where ts.transitLine='" + sid + "'";
+                if(date != null && !date.equals("")) {
+                    add = add + " and r.reservation_date='" + date + "'";
+                    preCount = preCount + " and r.reservation_date='" + date + "'";
+                }
+            } else if(date != null && !date.equals("")) {
+                add = add + " where r.reservation_date='" + date + "'";
+                preCount = preCount + " where r.reservation_date='" + date + "'";
+            }
+            System.out.println(add);
+            PreparedStatement ps1 = con.prepareStatement(add);
+            PreparedStatement ps2 = con.prepareStatement(preCount);
+            ResultSet rs1 = ps1.executeQuery();
+            ResultSet rs2 = ps2.executeQuery();
+            rs2.next();
+            String[][] resList = new String[rs2.getInt("tupleCount")][8];
+            int arrayCount  = 0;
+            while (rs1.next()) {
+                resList[arrayCount][0]=(Integer.toString(rs1.getInt("reservation_number")));
+                resList[arrayCount][1]=(Integer.toString(rs1.getInt("customerID")));
+                resList[arrayCount][2]=(rs1.getString("first_name"));
+                resList[arrayCount][3]=(rs1.getString("last_name"));
+                resList[arrayCount][4]=(rs1.getDate("reservation_date").toString());
+                resList[arrayCount][5]=(Double.toString(Math.round(rs1.getFloat("total_fare")  * 100.0) / 100.0));
+                resList[arrayCount][6]=(rs1.getString("reservation_type"));
+                resList[arrayCount][7]=(rs1.getString("transitLine"));
+                arrayCount++;
+            }
+            
+            rs1.close();
+            rs2.close();
+            con.close();
+            return resList;
+        }catch(Exception e) {
+            System.out.println(e.getMessage());
+            throw e;
+        }
+	}
 }
