@@ -8,8 +8,7 @@ import javax.servlet.http.*;
 import java.text.SimpleDateFormat;
 import javax.servlet.*;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;    
+  
 
 public class ApplicationDB {
 	
@@ -539,80 +538,92 @@ public class ApplicationDB {
 			throw e;
 		}
 	}
-	/**NOT STARTED YET
-	public int getDiscount(String cus) throws Exception {
+	public float calculateFare(String origin, String dest, String date, String type, String age, String disabled) throws Exception {
 		try {
-			SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
 			ApplicationDB db = new ApplicationDB();	
 			Connection con = db.getConnection();
-			String check = "";
-			if(cus.equals("0-17")) {
-				check = "select * from Reservations res inner join Customers cust on res.customerid = cust.customerID order by cust.customerID;";
-			}else {
-				//(by.equals("transit"))
-				check = "select * from Reservations res inner join Customers cust on res.customerid = cust.customerID order by res.scheduleID;";
+			Float fare = 16.00f;
+			
+			
+			String query = "select ts.transitLine from Train_Schedule ts inner join Stops sp  on ts.transitLine = sp.transitLine where stationName = (?) and travelDate = (?);";
+			PreparedStatement ps1 = con.prepareStatement(query);
+			ps1.setString(1, origin);
+			ps1.setString(2, date);
+			ResultSet rsa = ps1.executeQuery();
+			rsa.next();
+			String line = rsa.getString("transitLine");
+			
+			// One-Way Ticket 
+			query = "select (new_fare*stop_interval) as total_fare from (select (fare/stops) as new_fare from (select fare from Train_Schedule where transitLine = (?) and travelDate = (?)) fare, (select count(*) stops from Stops where transitLine = (?)) stops) new_fare, (select (destination - origin) as stop_interval from (select stop_num as origin from Stops where transitLine = (?) and stationName = (?)) origin, (select stop_num as destination from Stops where transitLine = (?) and stationName = (?)) destination) stop_interval;";
+			PreparedStatement ps = con.prepareStatement(query);
+			ps.setString(1, line);
+			ps.setString(2, date);
+			ps.setString(3, line);
+			ps.setString(4, line);	
+			ps.setString(5, origin);
+			ps.setString(6, line);
+			ps.setString(7, dest);		
+			ResultSet rs = ps.executeQuery();
+			rs.next();
+			fare = rs.getFloat("total_fare");
+			
+			// Round Trip Ticket
+			if(type.equals("round_trip")) {
+				fare *= 2.0f;
 			}
-			String preCount = "select count(*) tupleCount from Reservations";
-			PreparedStatement ps1 = con.prepareStatement(check);
-			PreparedStatement ps2 = con.prepareStatement(preCount);
-			ResultSet rs1 = ps1.executeQuery();
-			ResultSet rs2 = ps2.executeQuery();
-			rs2.next();
-			String[][] resList = new String[rs2.getInt("tupleCount")][9];
-			int arrayCount  = 0;
-			while (rs1.next()) {
-				resList[arrayCount][0]=(Integer.toString(rs1.getInt("reservation_number")));
-				resList[arrayCount][1]=(formatter.format(rs1.getDate("reservation_date")));
-				resList[arrayCount][2]=(Integer.toString(rs1.getInt("total_fare")));
-				resList[arrayCount][3]=(Integer.toString(rs1.getInt("trainID")));
-				resList[arrayCount][4]=(Integer.toString(rs1.getInt("scheduleID")));
-				resList[arrayCount][5]=(Integer.toString(rs1.getInt("customerid")));
-				resList[arrayCount][6]=((rs1.getString("reservation_type")));
-				resList[arrayCount][7]=((rs1.getString("first_name")));
-				resList[arrayCount][8]=((rs1.getString("last_name")));
-				arrayCount++;
+			
+			// Discounts
+			if(age.equals("0-17")) {
+				fare *= 0.75f;
+			}else if(age.equals("65+")){
+				fare *= 0.65f;
 			}
+			if(!(disabled.equals(null))) {
+				fare *= 0.50f;
+			}
+			
 			con.close();
-			rs1.close();
-			rs2.close();
-			return arrayCount;
+			rs.close();
+			rsa.close();
+			return fare;
 		}catch(Exception e) {
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 			throw e;
 		}
 	}
-	**/
-public int createReservation(String origin, String dest, String date, String time, String username, String type) {
+	
+public int createReservation(String origin, String dest, String date, String time, String user, String type, String age, String disable) {
 		
 		try {
 			ApplicationDB db = new ApplicationDB();	
 			Connection con = db.getConnection();
-			Float fare = 15.00f;
+			Float fare = 0.00f;
 			String query = "";
 			long millis=System.currentTimeMillis();  
 			Date now = new java.sql.Date(millis); 
 			System.out.println(now);
-			System.out.println(username);
+			System.out.println(user);
 			
 			// Gets customerid to find reservation_number
 			query = "select customerID from Customers where username = (?)";
 			PreparedStatement ps = con.prepareStatement(query);
-			ps.setString(1, username);
+			ps.setString(1, user);
 			ResultSet rs = ps.executeQuery();
 			rs.next();
 			String id = Integer.toString(rs.getInt("customerID"));
-			
-			// Get trainID and scheduleID from Train_Schedule
-			query = "select trainID,scheduleID from Train_Schedule where origin = (?) and destination = (?) and travelDate = (?);";
+
+			// Get trainID, scheduleID, transitLine
+			query = "select trainID, scheduleID, ts.transitLine from Train_Schedule ts inner join Stops sp  on ts.transitLine = sp.transitLine where stationName = (?) and travelDate = (?);";
 			PreparedStatement ps1 = con.prepareStatement(query);
 			ps1.setString(1, origin);
-			ps1.setString(2, dest);
-			ps1.setString(3, date);
+			ps1.setString(2, date);
 			ResultSet rsa = ps1.executeQuery();
 			rsa.next();
 			int train = rsa.getInt("trainID");
 			int sched = rsa.getInt("scheduleID");
-
+			
+			// Fare Calculator
+			fare = calculateFare(origin, dest, date, type, age, disable);
 			
 			// Inserts reservation
 			query= "insert into Reservations (reservation_date, total_fare, trainID, scheduleID, customerid, reservation_type) values((?),(?),(?),(?),(?),(?))";

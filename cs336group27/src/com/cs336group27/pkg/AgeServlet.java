@@ -1,8 +1,6 @@
 package com.cs336group27.pkg;
 
 import java.io.IOException;
-import java.sql.Date;
-import java.sql.Time;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -42,59 +40,73 @@ public class AgeServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);
+		
 		try {
 			
-			//Ticket Type
-			request.setAttribute("type", request.getParameter("listType"));
+			String origin = (String)request.getParameter("origin");
+			String dest = (String)request.getParameter("destination");
+			String date = (String)request.getParameter("resdate");
+			String time = (String)request.getParameter("restime");
+			String user = (String)request.getParameter("user");
+			request.setAttribute("type", "listType");
 			String type = (String)request.getAttribute("type");
-			if(type.equals("one_way")) {
-				String message3 = "One Way Ticket";
-				request.setAttribute("message3", message3);
-			} else {
-				String message3 = "Round-Trip Ticket";
-				request.setAttribute("message3", message3);
-			}
-			
-			// Origin/Destination
-			int res = appDB.createReservation(request.getParameter("origin"), request.getParameter("destination"), request.getParameter("resdate"), request.getParameter("restime"), request.getParameter("user"), type);
-			if(res > 0) {
-				String message2 = "Thank you for making a reservation. Your Reservation Number is: " + res;
-				request.setAttribute("message2", message2);
-			 }else {
-				String message2 = "FATAL DATABASE ERROR";
-				request.setAttribute("message2", message2);
-			 }
-			
+			String age = (String)request.getParameter("age");
+			String disabled = (String)request.getParameter("disableConfirm");
 			
 			// Age Discount
-			 if(request.getParameter("age").equals("0-17")) {
+			 if(age.equals("0-17")) {
 				String message = "Child: 25% Discount";
 				request.setAttribute("message", message);
-			 }else if(request.getParameter("age").equals("18-64")) {
+			 }else if(age.equals("18-64")) {
 					String message = "";
 					request.setAttribute("message", message);
-			 }else if(request.getParameter("age").equals("65+")) {
+			 }else if(age.equals("65+")) {
 					String message = "Senior: 35% Discount";
 					request.setAttribute("message", message);
 			 }
 			 // Disability Discount
-			 if(request.getParameter("disableConfirm") == null) {
+			 if(disabled == null) {
 					String message1 = "";
 					request.setAttribute("message1", message1);
 			 } else {
 					String message1 = "Disabled: 50% Discount";
 					request.setAttribute("message1", message1);
 				}
+			 
+			 //Ticket Type
+				request.setAttribute("type", request.getParameter("listType"));
+				if(request.getAttribute("type").equals("one_way")) {
+					String message2 = "One Way Ticket";
+					request.setAttribute("message2", message2);
+				} else {
+					String message2 = "Round-Trip Ticket";
+					request.setAttribute("message2", message2);
+				}
+				
+				// Origin/Destination
+				int res = appDB.createReservation(origin, dest, date, time, user, type, age, request.getParameter("disableConfirm"));
+				if(res > 0) {
+					String message3 = "Thank you for making a reservation. Your Reservation Number is: " + res;
+					request.setAttribute("message3", message3);
+				 }else {
+					String message3 = "FATAL DATABASE ERROR";
+					request.setAttribute("message3", message3);
+				 }
+				
+				
+				// Calculate Fare
+				float fare = appDB.calculateFare(origin, dest, date, type, age, disabled);
+				if(fare > 0) {
+					String message4 = "Your total fare is: $" + fare;
+					request.setAttribute("message4", message4);
+				 }else {
+					String message4 = "Cannot calculate fare";
+					request.setAttribute("message4", message4);
+				 }
 		}catch(Exception e){
 			// Age Discount
-			String message = e.getMessage();
-			request.setAttribute("message", message);
-			 // Disability Discount
-			String message1 = e.getMessage();
-			request.setAttribute("message1", message1);
-			
+			e.printStackTrace();
 		} finally {
-			//String[][] r = appDB.getDiscount(request.getParameter("age","disableConfirm"));
 			RequestDispatcher rd = request.getRequestDispatcher("CusMakeReservation.jsp");
 			rd.forward(request, response);
 		}

@@ -25,7 +25,6 @@
 	</div>
 	<br>
 <br>
-<br>
 		<div class="container" id="choose">
 		
 		<!-- Enter Origin -->
@@ -51,7 +50,7 @@
 
 
 	<br>
-	
+	<br>
 		<div class="container" id="submitAgeButton">
 		<input type = "hidden" id = "user" name = "user" value = ${cust.getName()}>
 			<label for="age">Select your age in years:</label>
@@ -91,6 +90,8 @@
 		${message2}
 		<br>
 		${message3}
+		<br>
+		${message4}
 	</div>
 </form>
 	
