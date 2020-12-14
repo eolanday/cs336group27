@@ -1,6 +1,8 @@
 package com.cs336group27.pkg;
 
 import java.io.IOException;
+import java.sql.Date;
+import java.sql.Time;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -8,6 +10,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 
 /**
  * Servlet implementation class AgeServlet
@@ -40,6 +43,30 @@ public class AgeServlet extends HttpServlet {
 		// TODO Auto-generated method stub
 		doGet(request, response);
 		try {
+			
+			//Ticket Type
+			request.setAttribute("type", request.getParameter("listType"));
+			String type = (String)request.getAttribute("type");
+			if(type.equals("one_way")) {
+				String message3 = "One Way Ticket";
+				request.setAttribute("message3", message3);
+			} else {
+				String message3 = "Round-Trip Ticket";
+				request.setAttribute("message3", message3);
+			}
+			
+			// Origin/Destination
+			int res = appDB.createReservation(request.getParameter("origin"), request.getParameter("destination"), request.getParameter("resdate"), request.getParameter("restime"), request.getParameter("user"), type);
+			if(res > 0) {
+				String message2 = "Thank you for making a reservation. Your Reservation Number is: " + res;
+				request.setAttribute("message2", message2);
+			 }else {
+				String message2 = "FATAL DATABASE ERROR";
+				request.setAttribute("message2", message2);
+			 }
+			
+			
+			// Age Discount
 			 if(request.getParameter("age").equals("0-17")) {
 				String message = "Child: 25% Discount";
 				request.setAttribute("message", message);
@@ -50,6 +77,7 @@ public class AgeServlet extends HttpServlet {
 					String message = "Senior: 35% Discount";
 					request.setAttribute("message", message);
 			 }
+			 // Disability Discount
 			 if(request.getParameter("disableConfirm") == null) {
 					String message1 = "";
 					request.setAttribute("message1", message1);
@@ -58,8 +86,10 @@ public class AgeServlet extends HttpServlet {
 					request.setAttribute("message1", message1);
 				}
 		}catch(Exception e){
+			// Age Discount
 			String message = e.getMessage();
 			request.setAttribute("message", message);
+			 // Disability Discount
 			String message1 = e.getMessage();
 			request.setAttribute("message1", message1);
 			

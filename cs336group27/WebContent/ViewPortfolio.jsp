@@ -15,7 +15,7 @@
 <% 
 	ApplicationDB appDB = new ApplicationDB();
 	String[][] resList = appDB.getPortfolio((String)request.getAttribute("currentUser"));
-		out.print("<p><b>Customer Name</b>: "+resList[0][6]+" "+resList[0][7]+"</p>");
+		out.print("<p><b>Customer Name</b>: "+resList[0][9]+" "+resList[0][10]+"</p>");
 		out.print("<table>");
 		out.print("<tr>");
 		out.print("<td>");
@@ -31,10 +31,19 @@
 		out.print("<b>Train ID</b>");
 		out.print("</td>");
 		out.print("<td>");
-		out.print("<b>scheduleID</b>");
+		out.print("<b>Transit Line</b>");
 		out.print("</td>");
 		out.print("<td>");
 		out.print("<b>Reservation Type</b>");
+		out.print("</td>");
+		out.print("<td>");
+		out.print("<b>Departure Date</b>");
+		out.print("</td>");
+		out.print("<td>");
+		out.print("<b>Origin</b>");
+		out.print("</td>");
+		out.print("<td>");
+		out.print("<b>Destination</b>");
 		out.print("</td>");
 		out.print("</tr>");
 		for(int i = 0; i < resList.length;i++) {
@@ -56,6 +65,15 @@
 			out.print("</td>");
 			out.print("<td>");
 			out.print(resList[i][5]);
+			out.print("</td>");
+			out.print("<td>");
+			out.print(resList[i][6]);
+			out.print("</td>");
+			out.print("<td>");
+			out.print(resList[i][7]);
+			out.print("</td>");
+			out.print("<td>");
+			out.print(resList[i][8]);
 			out.print("</td>");
 			out.print("</tr>");
 		}

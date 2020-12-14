@@ -1,5 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
+<%@page import="com.cs336group27.model.*"%>  
+<%@page import="com.cs336group27.pkg.ApplicationDB"%>  
+<%@page import="java.io.*,java.util.*,java.sql.*"%> 
 <!DOCTYPE html>
 <html>
 <head>
@@ -11,7 +14,7 @@
 <h1>Reserve a Ticket</h1>
 
 <label style="font-weight: bold;" for="ticket_type">Ticket Type:</label>
-<form action="" method='post' name = "ticket_type" id = "ticket_type">
+	<form action="AgeServlet" method = "post" name = "ticket_type">
 	<div>
 	  <input type="radio" id="one_way" name="listType" value="one_way">
 	  <label for="one_way">One-Way</label>
@@ -21,16 +24,36 @@
 	  <label for="round_trip">Round-Trip</label>
 	</div>
 	<br>
-	<input type="submit" value="Select">
-</form>
-
-
-
+<br>
+<br>
+		<div class="container" id="choose">
+		
+		<!-- Enter Origin -->
+			<label for="origin"><b>Origin:</b></label>
+			<input type="text" placeholder="Enter Starting Point" name="origin">
+			<br>
+			
+		<!-- Enter Destination -->
+			<label for="destination"><b>Destination:</b></label>
+			<input type="text" placeholder="Enter Destination" name="destination">
+			<br>
+		
+		<!-- Enter Departure Date -->
+			<label for="resdate"><b>Departure Date:</b></label>
+			<input type="text" placeholder="YYYY-MM-DD" name="resdate">
+			<br>
+			
+		<!-- Enter Departure Time -->
+			<label for="restime"><b>Departure Time:</b></label>
+			<input type="text" placeholder="XX:XX:XXXX" name="restime">
+			<br>
+		</div>
 
 
 	<br>
-	<form action="AgeServlet" method = "post">
+	
 		<div class="container" id="submitAgeButton">
+		<input type = "hidden" id = "user" name = "user" value = ${cust.getName()}>
 			<label for="age">Select your age in years:</label>
 			<select name="age" id = "age" required>		
 			<%
@@ -64,6 +87,10 @@
 		${message}
 		<br>
 		${message1}
+		<br>
+		${message2}
+		<br>
+		${message3}
 	</div>
 </form>
 	

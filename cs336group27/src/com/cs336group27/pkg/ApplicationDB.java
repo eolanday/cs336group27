@@ -2,9 +2,15 @@ package com.cs336group27.pkg;
 import java.io.*;
 import java.util.*;
 import java.sql.*;
+import java.sql.Date;
+
 import javax.servlet.http.*;
 import java.text.SimpleDateFormat;
 import javax.servlet.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;    
+
 public class ApplicationDB {
 	
 	public ApplicationDB(){
@@ -484,8 +490,8 @@ public class ApplicationDB {
 			SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
 			ApplicationDB db = new ApplicationDB();	
 			Connection con = db.getConnection();
-			String check = "select * from Reservations res inner join Customers cust on res.customerid = cust.customerID where cust.username = (?) order by res.reservation_date;";
-			String s = "Reservations res inner join Customers cust on res.customerid = cust.customerID where cust.username = (?) order by res.reservation_date;";
+			String check = "select * from Reservations res inner join Customers cust on res.customerid = cust.customerID inner join Train_Schedule ts on res.scheduleID = ts.scheduleID where cust.username = (?) order by res.reservation_date;";
+			String s = "Reservations res inner join Customers cust on res.customerid = cust.customerID inner join Train_Schedule ts on res.scheduleID = ts.scheduleID where cust.username = (?) order by res.reservation_date;";
 			String preCount = "select count(*) tupleCount from " + s;
 			PreparedStatement ps1 = con.prepareStatement(check);
 			PreparedStatement ps2 = con.prepareStatement(preCount);
@@ -494,17 +500,20 @@ public class ApplicationDB {
 			ResultSet rs1 = ps1.executeQuery();
 			ResultSet rs2 = ps2.executeQuery();
 			rs2.next();
-			String[][] resList = new String[rs2.getInt("tupleCount")][8];
+			String[][] resList = new String[rs2.getInt("tupleCount")][11];
 			int arrayCount  = 0;
 			while (rs1.next()) {
 				resList[arrayCount][0]=(Integer.toString(rs1.getInt("reservation_number")));
 				resList[arrayCount][1]=(formatter.format(rs1.getDate("reservation_date")));
 				resList[arrayCount][2]=(Integer.toString(rs1.getInt("total_fare")));
 				resList[arrayCount][3]=(Integer.toString(rs1.getInt("trainID")));
-				resList[arrayCount][4]=(Integer.toString(rs1.getInt("scheduleID")));
+				resList[arrayCount][4]=((rs1.getString("transitLine")));
 				resList[arrayCount][5]=((rs1.getString("reservation_type")));
-				resList[arrayCount][6]=((rs1.getString("first_name")));
-				resList[arrayCount][7]=((rs1.getString("last_name")));
+				resList[arrayCount][6]=(formatter.format(rs1.getDate("travelDate")));
+				resList[arrayCount][7]=((rs1.getString("origin")));
+				resList[arrayCount][8]=((rs1.getString("destination")));
+				resList[arrayCount][9]=((rs1.getString("first_name")));
+				resList[arrayCount][10]=((rs1.getString("last_name")));
 				arrayCount++;
 			}
 			con.close();
@@ -530,7 +539,7 @@ public class ApplicationDB {
 			throw e;
 		}
 	}
-	//NOT STARTED YET
+	/**NOT STARTED YET
 	public int getDiscount(String cus) throws Exception {
 		try {
 			SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
@@ -570,6 +579,70 @@ public class ApplicationDB {
 		}catch(Exception e) {
 			System.out.println(e.getMessage());
 			throw e;
+		}
+	}
+	**/
+public int createReservation(String origin, String dest, String date, String time, String username, String type) {
+		
+		try {
+			ApplicationDB db = new ApplicationDB();	
+			Connection con = db.getConnection();
+			Float fare = 15.00f;
+			String query = "";
+			long millis=System.currentTimeMillis();  
+			Date now = new java.sql.Date(millis); 
+			System.out.println(now);
+			System.out.println(username);
+			
+			// Gets customerid to find reservation_number
+			query = "select customerID from Customers where username = (?)";
+			PreparedStatement ps = con.prepareStatement(query);
+			ps.setString(1, username);
+			ResultSet rs = ps.executeQuery();
+			rs.next();
+			String id = Integer.toString(rs.getInt("customerID"));
+			
+			// Get trainID and scheduleID from Train_Schedule
+			query = "select trainID,scheduleID from Train_Schedule where origin = (?) and destination = (?) and travelDate = (?);";
+			PreparedStatement ps1 = con.prepareStatement(query);
+			ps1.setString(1, origin);
+			ps1.setString(2, dest);
+			ps1.setString(3, date);
+			ResultSet rsa = ps1.executeQuery();
+			rsa.next();
+			int train = rsa.getInt("trainID");
+			int sched = rsa.getInt("scheduleID");
+
+			
+			// Inserts reservation
+			query= "insert into Reservations (reservation_date, total_fare, trainID, scheduleID, customerid, reservation_type) values((?),(?),(?),(?),(?),(?))";
+			PreparedStatement ps2 = con.prepareStatement(query);
+			ps2.setDate(1, now);
+			ps2.setFloat(2, fare);
+			ps2.setInt(3, train); 
+			ps2.setInt(4, sched);
+			ps2.setString(5, id);
+			ps2.setString(6, type);
+			int rows = ps2.executeUpdate();
+			if (rows <= 0) {
+				return -1;
+			}
+			
+			// Get highest res_num
+			query = "select reservation_number from Reservations order by reservation_number desc";
+			PreparedStatement ps3 = con.prepareStatement(query);
+			ResultSet rsb = ps3.executeQuery();
+			rsb.next();
+			rows = rsb.getInt("reservation_number"); 
+			
+			rs.close();
+			rsa.close();
+			rsb.close();
+			con.close();
+			return rows;
+		}catch(Exception e) {
+			e.printStackTrace();
+			return -1;
 		}
 	}
 	public String[][] getTrainSchedule(String origin, String destination, String travelDate) throws Exception{
