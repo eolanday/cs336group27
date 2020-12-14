@@ -537,7 +537,7 @@ public class ApplicationDB {
 			ApplicationDB db = new ApplicationDB();	
 			Connection con = db.getConnection();
 			String query = "SELECT * FROM trainsys1.Trains t where t.origin = '"+origin+"' and t.destination = '"+destination+"' and t.travelDate = '"+travelDate+"';";
-			String count = "SELECT COUNT(*) FROM trainsys1.Trains t where t.origin = '"+origin+"' and t.destination = '"+destination+"' and t.travelDate = '"+travelDate+"';";
+			String count = "SELECT COUNT(*) tuplesCount FROM trainsys1.Trains t where t.origin = '"+origin+"' and t.destination = '"+destination+"' and t.travelDate = '"+travelDate+"';";
 			PreparedStatement ps1 = con.prepareStatement(query);
 			PreparedStatement ps2 = con.prepareStatement(count);
 			ResultSet rs1 = ps1.executeQuery();

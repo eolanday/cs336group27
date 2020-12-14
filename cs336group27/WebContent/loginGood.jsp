@@ -44,14 +44,23 @@
 		
 	<h3>Search for train schedules!</h3>
 	<br>
-	<form action="scheduleSearchServlet.java" method='post'>
+	<form action="scheduleSearchServlet" method='post'>
 
 		Origin: <input type="text" name="origin">
 		<br />
 		Destination: <input type="text" name="destination">
 		<br />
-		Travel Date: <input type="text" name="travelDate">
+		Travel Date: <input type="text" name="travelDate" placeholder="yyyy-mm-dd">
 		<br /> 
+			<input type="radio" id="sortFare" name="sortFare" value="sortFare">
+		  	<label for="sortFare">Sort by Fare</label>
+		<br/>
+			<input type="radio" id="sortArrival" name="sortArrival" value="sortArrival">
+		  	<label for="sortArrival">Sort by Arrival Time</label>
+	  	<br/>
+		  	<input type="radio" id="sortDeparture" name="sortDeparture" value="sortDeparture">
+		  	<label for="sortDeparture">Sort by Departure Time</label>
+	  	<br/>
 		<input type = "submit" value = "Submit" />
 	</form>		
 </body>
