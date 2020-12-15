@@ -87,35 +87,35 @@
 	out.print("<tr>");
 	
 	out.print("<td>");
-	out.print("transitLine");
+	out.print("Transit Line");
 	out.print("</td>");
 	
 	out.print("<td>");
-	out.print("scheduleID");
+	out.print("Schedule ID");
 	out.print("</td>");
 	
 	out.print("<td>");
-	out.print("trainID");
+	out.print("Train ID");
 	out.print("</td>");
 	
 	out.print("<td>");
-	out.print("travel_time");
+	out.print("Travel Time");
 	out.print("</td>");
 	
 	out.print("<td>");
-	out.print("fare");
+	out.print("Fare");
 	out.print("</td>");
 	
 	out.print("<td>");
-	out.print("travelDate");
+	out.print("Travel Date");
 	out.print("</td>");
 	
 	out.print("<td>");
-	out.print("origin");
+	out.print("Origin");
 	out.print("</td>");
 	
 	out.print("<td>");
-	out.print("destination");
+	out.print("Destination");
 	out.print("</td>");
 
 	out.print("</tr>");
