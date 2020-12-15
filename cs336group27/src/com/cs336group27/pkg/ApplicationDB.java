@@ -489,7 +489,7 @@ public class ApplicationDB {
 	}
 	public String[][] getPortfolio(String user, String type) throws Exception {
 		try {
-			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd");
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 			ApplicationDB db = new ApplicationDB();	
 			Connection con = db.getConnection();
 			String check = "";
@@ -499,7 +499,7 @@ public class ApplicationDB {
 			ResultSet rs1,rs2,rs3,rs4;
 			long millis=System.currentTimeMillis();  
 			Date now = new java.sql.Date(millis); 
-			System.out.println(now);
+			System.out.println(formatter.format(now));
 			System.out.println(type + "two");
 			
 			/**if (type == null) {
@@ -539,8 +539,8 @@ public class ApplicationDB {
 			rs3.close();
 			rs4.close();
 			}  else if(type == null || type.equals("past")) {**/ 
-				check = "select * from Reservations res inner join Customers cust on res.customerid = cust.customerID inner join Train_Schedule ts on res.scheduleID = ts.scheduleID inner join Stops sp on ts.origin = sp.stationName where cust.username = (?) and Date(travelDate) < (?) order by ts.travelDate, sp.arrival_time;";
-				s = "Reservations res inner join Customers cust on res.customerid = cust.customerID inner join Train_Schedule ts on res.scheduleID = ts.scheduleID inner join Stops sp on ts.origin = sp.stationName where cust.username = (?) and Date(travelDate) < (?) order by ts.travelDate, sp.arrival_time;";
+				check = "select * from Reservations res inner join Customers cust on res.customerid = cust.customerID inner join Train_Schedule ts on res.scheduleID = ts.scheduleID inner join Stops sp on ts.origin = sp.stationName where cust.username = (?) and Date(travelDate) >= (?) order by ts.travelDate, sp.arrival_time;";
+				s = "Reservations res inner join Customers cust on res.customerid = cust.customerID inner join Train_Schedule ts on res.scheduleID = ts.scheduleID inner join Stops sp on ts.origin = sp.stationName where cust.username = (?) and Date(travelDate) >= (?) order by ts.travelDate, sp.arrival_time;";
 				preCount = "select count(*) tupleCount from " + s;
 				PreparedStatement ps1 = con.prepareStatement(check);
 				ps1.setString(1, user);
@@ -812,7 +812,7 @@ public int createReservation(String origin, String dest, String date, String tim
 	}
 	
 	
-	public String[][] getTrainSchedules(String key) throws Exception {
+	/**public String[][] getTrainSchedules(String key) throws Exception {
 		try {
 		    ApplicationDB db = new ApplicationDB(); 
 		    Connection con = db.getConnection();
@@ -845,7 +845,7 @@ public int createReservation(String origin, String dest, String date, String tim
 		    System.out.println(e.getMessage());
 		    throw e;
 		}
-	}
+	}**/
 	
 	public String[][] getTrainSchedules(String key) throws Exception {
         try {
