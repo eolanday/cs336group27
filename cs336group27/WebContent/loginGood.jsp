@@ -29,7 +29,7 @@
 	<!-- Reservation Portfolio-->
 	<form action="ViewPortfolio" method = "post">
 		<div class="container" id="viewPortfolioButton">
-			<input type = "hidden" id = "user" name = "user" value = ${cust.getName()} >
+			<input type = "hidden" id = "user" name = "user" value = ${cust.getName()}>
 			<button type="submit">View Portfolio</button>
 		</div>
 	</form>
@@ -47,13 +47,8 @@
 	<br>
 		
 	<h3>Search for train schedules!</h3>
-<<<<<<< HEAD
-	<br>
-	<form action="scheduleSearchServlet" method='post'>
-=======
-	<form action="scheduleSearchServlet.java" method='post'>
->>>>>>> bdb201bd73db4ec26444cbd02e9b94840ef01b03
 
+	<form action="scheduleSearchServlet" method="post" >
 		Origin: <input type="text" name="origin">
 		<br />
 		Destination: <input type="text" name="destination">

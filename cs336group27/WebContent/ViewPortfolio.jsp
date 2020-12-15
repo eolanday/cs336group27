@@ -12,10 +12,35 @@
 </head>
 <h1>${cust.getName()}'s Reservation Portfolio</h1>
 <body>
+
+
+<label style="font-weight: bold;" for = "view_choice">View:</label>
+	<form action="SwitchView" method = "post" name = "view_choice">
+		<div>
+		  <input type="radio" id="past" name="switch" value="past">
+		  <label for="past">Past Reservations</label>
+		</div>
+		<div>
+		  <input type="radio" id="future" name="switch" value="future">
+		  <label for="future">Future Reservations</label>
+		  <br>
+		 </div>
+		  <input type = "hidden" id = "user" name = "user" value = ${cust.getName()} >
+		  <button type="submit"> Submit</button>
+	</form>
+		  
+		
+		<br>
+
+
 <% 
 	ApplicationDB appDB = new ApplicationDB();
-	String[][] resList = appDB.getPortfolio((String)request.getAttribute("currentUser"));
-		out.print("<p><b>Customer Name</b>: "+resList[0][9]+" "+resList[0][10]+"</p>");
+	String user = (String)request.getAttribute("currentUser");
+	String type = (String)request.getAttribute("type");
+	System.out.println(user);
+	System.out.println(type);
+	String[][] resList = appDB.getPortfolio(user, type);
+		out.print("<p><b>Customer Name</b>: "+resList[0][11]+" "+resList[0][12]+"</p>");
 		out.print("<table>");
 		out.print("<tr>");
 		out.print("<td>");
@@ -25,25 +50,31 @@
 		out.print("<b>Reservation Date</b>");
 		out.print("</td>");
 		out.print("<td>");
-		out.print("<b>Total Fare</b>");
-		out.print("</td>");
-		out.print("<td>");
-		out.print("<b>Train ID</b>");
-		out.print("</td>");
-		out.print("<td>");
-		out.print("<b>Transit Line</b>");
+		out.print("<b>Travel Date</b>");
 		out.print("</td>");
 		out.print("<td>");
 		out.print("<b>Reservation Type</b>");
 		out.print("</td>");
 		out.print("<td>");
-		out.print("<b>Travel Date</b>");
+		out.print("<b>Transit Line</b>");
+		out.print("</td>");
+		out.print("<td>");
+		out.print("<b>Train Number</b>");
 		out.print("</td>");
 		out.print("<td>");
 		out.print("<b>Origin</b>");
 		out.print("</td>");
 		out.print("<td>");
 		out.print("<b>Destination</b>");
+		out.print("</td>");
+		out.print("<td>");
+		out.print("<b>Arrival Time</b>");
+		out.print("</td>");
+		out.print("<td>");
+		out.print("<b>Departure Time</b>");
+		out.print("</td>");
+		out.print("<td>");
+		out.print("<b>Total Fare</b>");
 		out.print("</td>");
 		out.print("</tr>");
 		for(int i = 0; i < resList.length;i++) {
@@ -74,6 +105,12 @@
 			out.print("</td>");
 			out.print("<td>");
 			out.print(resList[i][8]);
+			out.print("</td>");
+			out.print("<td>");
+			out.print(resList[i][9]);
+			out.print("</td>");
+			out.print("<td>");
+			out.print(resList[i][10]);
 			out.print("</td>");
 			out.print("</tr>");
 		}
