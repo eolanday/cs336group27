@@ -37,7 +37,7 @@
 		out.print("<b>Reservation Type</b>");
 		out.print("</td>");
 		out.print("<td>");
-		out.print("<b>Departure Date</b>");
+		out.print("<b>Travel Date</b>");
 		out.print("</td>");
 		out.print("<td>");
 		out.print("<b>Origin</b>");
