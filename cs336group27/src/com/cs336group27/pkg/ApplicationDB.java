@@ -490,7 +490,7 @@ public class ApplicationDB {
 	public String[][] getPortfolio(String user, String type) throws Exception {
 		try {
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-			SimpleDateFormat time = new SimpleDateFormat("hh:mm:ss");  
+			SimpleDateFormat time = new SimpleDateFormat("HH:mm:ss -19:00:00");  
 
 			ApplicationDB db = new ApplicationDB();	
 			Connection con = db.getConnection();
@@ -501,8 +501,8 @@ public class ApplicationDB {
 			ResultSet rs1,rs2;
 			long millis=System.currentTimeMillis();  
 			Date now = new java.sql.Date(millis); 
-			System.out.println(formatter.format(now));
-			System.out.println(user);
+			//System.out.println(formatter.format(now));
+			//System.out.println(user);
 			System.out.println(type + "two");
 			
 			if(type == null || type.equals("past")) {
@@ -518,8 +518,6 @@ public class ApplicationDB {
 				rs1 = ps1.executeQuery();
 				rs2 = ps2.executeQuery();
 				rs2.next();
-				System.out.println(rs1.getTime("departure_time"));
-				System.out.println(time.format(rs1.getTime("departure_time")));
 				resList = new String[rs2.getInt("tupleCount")][13];
 				int arrayCount  = 0;
 				while (rs1.next()) {
@@ -531,8 +529,8 @@ public class ApplicationDB {
 					resList[arrayCount][5]=(Integer.toString(rs1.getInt("trainID")));
 					resList[arrayCount][6]=((rs1.getString("origin")));
 					resList[arrayCount][7]=((rs1.getString("destination")));
-					resList[arrayCount][8]=(time.format(rs1.getTime("arrival_time")));
-					resList[arrayCount][9]=(time.format(rs1.getTime("departure_time")));
+					resList[arrayCount][8] =(time.format(rs1.getTime("arrival_time")));
+					resList[arrayCount][9] =(time.format(rs1.getTime("departure_time")));
 					resList[arrayCount][10]=(Integer.toString(rs1.getInt("total_fare")));
 					resList[arrayCount][11]=((rs1.getString("first_name")));
 					resList[arrayCount][12]=((rs1.getString("last_name")));
@@ -556,10 +554,12 @@ public class ApplicationDB {
 				rs1 = ps1.executeQuery();
 				rs2 = ps2.executeQuery();
 				rs2.next();
-				System.out.println(rs2.getInt("tupleCount"));
+				
 				resList = new String[rs2.getInt("tupleCount")][13];
 				int arrayCount  = 0;
 				while (rs1.next()) {
+					System.out.println(rs1.getTime("departure_time"));
+					System.out.println(time.format(rs1.getTime("departure_time")));
 					resList[arrayCount][0]=(Integer.toString(rs1.getInt("reservation_number")));
 					resList[arrayCount][1]=(formatter.format(rs1.getDate("reservation_date")));
 					resList[arrayCount][2]=(formatter.format(rs1.getDate("travelDate")));
@@ -568,8 +568,8 @@ public class ApplicationDB {
 					resList[arrayCount][5]=(Integer.toString(rs1.getInt("trainID")));
 					resList[arrayCount][6]=((rs1.getString("origin")));
 					resList[arrayCount][7]=((rs1.getString("destination")));
-					resList[arrayCount][8]=(formatter.format(rs1.getTime("arrival_time")));
-					resList[arrayCount][9]=(formatter.format(rs1.getTime("departure_time")));
+					resList[arrayCount][8] =(time.format(rs1.getTime("arrival_time")));
+					resList[arrayCount][9] =(time.format(rs1.getTime("departure_time")));
 					resList[arrayCount][10]=(Integer.toString(rs1.getInt("total_fare")));
 					resList[arrayCount][11]=((rs1.getString("first_name")));
 					resList[arrayCount][12]=((rs1.getString("last_name")));
