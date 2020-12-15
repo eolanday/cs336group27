@@ -28,7 +28,6 @@
 		  <input type = "hidden" id = "user" name = "user" value = ${cust.getName()} >
 		  <button type="submit"> Submit</button>
 	</form>
-		  
 		
 		<br>
 
@@ -37,9 +36,15 @@
 	ApplicationDB appDB = new ApplicationDB();
 	String user = (String)request.getAttribute("currentUser");
 	String type = (String)request.getAttribute("type");
-	System.out.println(user);
-	System.out.println(type);
+	//System.out.println(user);
+	//System.out.println(type);
 	String[][] resList = appDB.getPortfolio(user, type);
+	for(int i = 0; i<resList.length ; i++){
+		for(int j = 0; j<resList.length; j++){
+			System.out.println(resList[i][j]);
+		}
+		
+	}
 		out.print("<p><b>Customer Name</b>: "+resList[0][11]+" "+resList[0][12]+"</p>");
 		out.print("<table>");
 		out.print("<tr>");

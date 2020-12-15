@@ -27,7 +27,7 @@
 	<br>
 	<h3>View Your Reservation Portfolio</h3>
 	<!-- Reservation Portfolio-->
-	<form action="ViewPortfolio" method = "post">
+	<form action="ViewPortfolio.jsp">
 		<div class="container" id="viewPortfolioButton">
 			<input type = "hidden" id = "user" name = "user" value = ${cust.getName()}>
 			<button type="submit">View Portfolio</button>

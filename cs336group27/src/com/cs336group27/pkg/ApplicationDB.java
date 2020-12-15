@@ -489,65 +489,95 @@ public class ApplicationDB {
 	}
 	public String[][] getPortfolio(String user, String type) throws Exception {
 		try {
-			SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd");
 			ApplicationDB db = new ApplicationDB();	
 			Connection con = db.getConnection();
 			String check = "";
 			String s = "";
 			String preCount = "";
 			String[][] resList;
-			ResultSet rs1,rs2;
+			ResultSet rs1,rs2,rs3,rs4;
 			long millis=System.currentTimeMillis();  
 			Date now = new java.sql.Date(millis); 
+			System.out.println(now);
 			System.out.println(type + "two");
 			
+			/**if (type == null) {
 			check = "select * from Reservations res inner join Customers cust on res.customerid = cust.customerID inner join Train_Schedule ts on res.scheduleID = ts.scheduleID inner join Stops sp on ts.origin = sp.stationName where cust.username = (?) and Date(travelDate) < (?) order by ts.travelDate, sp.arrival_time;";
 			s = "Reservations res inner join Customers cust on res.customerid = cust.customerID inner join Train_Schedule ts on res.scheduleID = ts.scheduleID inner join Stops sp on ts.origin = sp.stationName where cust.username = (?) and Date(travelDate) < (?) order by ts.travelDate, sp.arrival_time;";
 			preCount = "select count(*) tupleCount from " + s;
-			PreparedStatement ps1 = con.prepareStatement(check);
-			ps1.setString(1, user);
-			ps1.setDate(2, now);
-			PreparedStatement ps2 = con.prepareStatement(preCount);
-			ps2.setString(1, user);
-			ps2.setDate(2, now);
-			rs1 = ps1.executeQuery();
-			rs2 = ps2.executeQuery();
-			rs2.next();
-			resList = new String[rs2.getInt("tupleCount")][13];
+			PreparedStatement ps3 = con.prepareStatement(check);
+			ps3.setString(1, user);
+			ps3.setDate(2, now);
+			PreparedStatement ps4 = con.prepareStatement(preCount);
+			ps4.setString(1, user);
+			ps4.setDate(2, now);
+			rs3 = ps3.executeQuery();
+			rs4 = ps4.executeQuery();
+			rs4.next();
+			resList = new String[rs4.getInt("tupleCount")][13];
 			int arrayCount  = 0;
-			while (rs1.next()) {
-				resList[arrayCount][0]=(Integer.toString(rs1.getInt("reservation_number")));
-				resList[arrayCount][1]=(formatter.format(rs1.getDate("reservation_date")));
-				resList[arrayCount][2]=(formatter.format(rs1.getDate("travelDate")));
-				resList[arrayCount][3]=((rs1.getString("reservation_type")));
-				resList[arrayCount][4]=((rs1.getString("transitLine")));
-				resList[arrayCount][5]=(Integer.toString(rs1.getInt("trainID")));
-				resList[arrayCount][6]=((rs1.getString("origin")));
-				resList[arrayCount][7]=((rs1.getString("destination")));
-				resList[arrayCount][8]=(formatter.format(rs1.getTimestamp("arrival_time")));
-				resList[arrayCount][9]=(formatter.format(rs1.getTimestamp("departure_time")));
-				resList[arrayCount][10]=(Integer.toString(rs1.getInt("total_fare")));
-				resList[arrayCount][11]=((rs1.getString("first_name")));
-				resList[arrayCount][12]=((rs1.getString("last_name")));
+			while (rs3.next()) {
+				resList[arrayCount][0]=(Integer.toString(rs3.getInt("reservation_number")));
+				resList[arrayCount][1]=(formatter.format(rs3.getDate("reservation_date")));
+				resList[arrayCount][2]=(formatter.format(rs3.getDate("travelDate")));
+				resList[arrayCount][3]=((rs3.getString("reservation_type")));
+				resList[arrayCount][4]=((rs3.getString("transitLine")));
+				resList[arrayCount][5]=(Integer.toString(rs3.getInt("trainID")));
+				resList[arrayCount][6]=((rs3.getString("origin")));
+				resList[arrayCount][7]=((rs3.getString("destination")));
+				resList[arrayCount][8]=(formatter.format(rs3.getTimestamp("arrival_time")));
+				resList[arrayCount][9]=(formatter.format(rs3.getTimestamp("departure_time")));
+				resList[arrayCount][10]=(Integer.toString(rs3.getInt("total_fare")));
+				resList[arrayCount][11]=((rs3.getString("first_name")));
+				resList[arrayCount][12]=((rs3.getString("last_name")));
 
 				arrayCount++;
+			
 			}
-
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			if(type.equals("past")) {
+			con.close();
+			rs3.close();
+			rs4.close();
+			}  else if(type == null || type.equals("past")) {**/ 
 				check = "select * from Reservations res inner join Customers cust on res.customerid = cust.customerID inner join Train_Schedule ts on res.scheduleID = ts.scheduleID inner join Stops sp on ts.origin = sp.stationName where cust.username = (?) and Date(travelDate) < (?) order by ts.travelDate, sp.arrival_time;";
 				s = "Reservations res inner join Customers cust on res.customerid = cust.customerID inner join Train_Schedule ts on res.scheduleID = ts.scheduleID inner join Stops sp on ts.origin = sp.stationName where cust.username = (?) and Date(travelDate) < (?) order by ts.travelDate, sp.arrival_time;";
+				preCount = "select count(*) tupleCount from " + s;
+				PreparedStatement ps1 = con.prepareStatement(check);
+				ps1.setString(1, user);
+				ps1.setString(2, formatter.format(now));
+				PreparedStatement ps2 = con.prepareStatement(preCount);
+				ps2.setString(1, user);
+				ps2.setString(2, formatter.format(now));
+				rs1 = ps1.executeQuery();
+				rs2 = ps2.executeQuery();
+				rs2.next();
+				System.out.println(rs2.getInt("tupleCount"));
+				resList = new String[rs2.getInt("tupleCount")][13];
+				int arrayCount  = 0;
+				while (rs1.next()) {
+					resList[arrayCount][0]=(Integer.toString(rs1.getInt("reservation_number")));
+					resList[arrayCount][1]=(formatter.format(rs1.getDate("reservation_date")));
+					resList[arrayCount][2]=(formatter.format(rs1.getDate("travelDate")));
+					resList[arrayCount][3]=((rs1.getString("reservation_type")));
+					resList[arrayCount][4]=((rs1.getString("transitLine")));
+					resList[arrayCount][5]=(Integer.toString(rs1.getInt("trainID")));
+					resList[arrayCount][6]=((rs1.getString("origin")));
+					resList[arrayCount][7]=((rs1.getString("destination")));
+					resList[arrayCount][8]=(formatter.format(rs1.getTimestamp("arrival_time")));
+					resList[arrayCount][9]=(formatter.format(rs1.getTimestamp("departure_time")));
+					resList[arrayCount][10]=(Integer.toString(rs1.getInt("total_fare")));
+					resList[arrayCount][11]=((rs1.getString("first_name")));
+					resList[arrayCount][12]=((rs1.getString("last_name")));
+
+					arrayCount++;
+					
+				}
+				con.close();
+				rs1.close();
+				rs2.close();
+			/**}else{
+				check = "select * from Reservations res inner join Customers cust on res.customerid = cust.customerID inner join Train_Schedule ts on res.scheduleID = ts.scheduleID inner join Stops sp on ts.origin = sp.stationName where cust.username = (?) and Date(travelDate) >= (?) order by ts.travelDate, sp.arrival_time;";
+				s = "Reservations res inner join Customers cust on res.customerid = cust.customerID inner join Train_Schedule ts on res.scheduleID = ts.scheduleID inner join Stops sp on ts.origin = sp.stationName where cust.username = (?) and Date(travelDate) >= (?) order by ts.travelDate, sp.arrival_time;";
 				preCount = "select count(*) tupleCount from " + s;
 				PreparedStatement ps1 = con.prepareStatement(check);
 				ps1.setString(1, user);
@@ -577,45 +607,15 @@ public class ApplicationDB {
 
 					arrayCount++;
 				}
-
-			}else{
-				check = "select * from Reservations res inner join Customers cust on res.customerid = cust.customerID inner join Train_Schedule ts on res.scheduleID = ts.scheduleID inner join Stops sp on ts.origin = sp.stationName where cust.username = (?) and Date(travelDate) >= (?) order by ts.travelDate, sp.arrival_time;";
-				s = "Reservations res inner join Customers cust on res.customerid = cust.customerID inner join Train_Schedule ts on res.scheduleID = ts.scheduleID inner join Stops sp on ts.origin = sp.stationName where cust.username = (?) and Date(travelDate) >= (?) order by ts.travelDate, sp.arrival_time;";
-				preCount = "select count(*) tupleCount from " + s;
-				PreparedStatement ps1 = con.prepareStatement(check);
-				ps1.setString(1, user);
-				ps1.setDate(2, now);
-				PreparedStatement ps2 = con.prepareStatement(preCount);
-				ps2.setString(1, user);
-				ps2.setDate(2, now);
-				rs1 = ps1.executeQuery();
-				rs2 = ps2.executeQuery();
-				rs2.next();
-				resList = new String[rs2.getInt("tupleCount")][12];
-				int arrayCount  = 0;
-				while (rs1.next()) {
-					resList[arrayCount][0]=(Integer.toString(rs1.getInt("reservation_number")));
-					resList[arrayCount][1]=(formatter.format(rs1.getDate("reservation_date")));
-					resList[arrayCount][2]=(formatter.format(rs1.getDate("travelDate")));
-					resList[arrayCount][3]=((rs1.getString("reservation_type")));
-					resList[arrayCount][4]=((rs1.getString("transitLine")));
-					resList[arrayCount][5]=(Integer.toString(rs1.getInt("trainID")));
-					resList[arrayCount][6]=((rs1.getString("origin")));
-					resList[arrayCount][7]=((rs1.getString("destination")));
-					resList[arrayCount][8]=(formatter.format(rs1.getTimestamp("arrival_time")));
-					resList[arrayCount][9]=(formatter.format(rs1.getTimestamp("departure_time")));
-					resList[arrayCount][10]=(Integer.toString(rs1.getInt("total_fare")));
-					resList[arrayCount][11]=((rs1.getString("first_name")));
-					resList[arrayCount][12]=((rs1.getString("last_name")));
-
-					arrayCount++;
-				}
-			}
+				con.close();
+				rs1.close();
+				rs2.close();
+			
+			}**/
 			
 			
-			con.close();
-			rs1.close();
-			rs2.close();
+			
+			
 			return resList;
 		}catch(Exception e) {
 			System.out.println(e.getMessage());
