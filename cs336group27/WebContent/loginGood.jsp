@@ -27,9 +27,10 @@
 	<br>
 	<h3>View Your Reservation Portfolio</h3>
 	<!-- Reservation Portfolio-->
-	<form action="ViewPortfolio.jsp">
+	<form action="SwitchView" method = "post">
 		<div class="container" id="viewPortfolioButton">
 			<input type = "hidden" id = "user" name = "user" value = ${cust.getName()}>
+			<input type = "hidden" id="future" name="switch" value="future">
 			<button type="submit">View Portfolio</button>
 		</div>
 	</form>
