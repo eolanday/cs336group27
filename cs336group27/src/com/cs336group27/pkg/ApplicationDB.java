@@ -772,6 +772,7 @@ public class ApplicationDB {
 		}
 	}
 
+
 	public String[][] getTrainSchedule(String origin, String destination, String travelDate, String sortType) throws Exception{
 		try {
 			SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
@@ -880,65 +881,8 @@ public class ApplicationDB {
 			throw e;
 		}
 	}
-	
-	/*public String[][] getTripInfo(String origin, String destination, String travelDate) throws Exception{
-		try {
-			SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
-			ApplicationDB db = new ApplicationDB();	
-			Connection con = db.getConnection();
-			
-			//Query to get our table
-			String tripInfo = "SELECT t.transitLine, t.trainID, t.travelDate, s.stationName, s.arrival_time, s.departure_time, t.fare, s.stop_num FROM trainsys1.Stops s, trainsys1.Train_Schedule t WHERE (s.stationName = '"+origin+"' OR s.stationName = '"+destination+"') AND s.transitLine = t.transitLine AND t.travelDate ='"+travelDate+"';";
-			//Query to return the number of rows in our table
-			String count = "SELECT COUNT(*) tuplesCount FROM trainsys1.Stops s, trainsys1.Train_Schedule t WHERE (s.stationName = '"+origin+"' OR s.stationName = '"+destination+"') AND s.transitLine = t.transitLine AND t.travelDate ='"+travelDate+"';";
-			//Query to return the total fare of the transit line
-			String fare = "SELECT t.fare FROM trainsys1.Train_Schedule t, trainsys1.Stops s WHERE s.stationName = '"+origin+"' AND s.transitLine = t.transitLine AND t.travelDate = '"+travelDate+"';";
-			
-			PreparedStatement ps1 = con.prepareStatement(tripInfo);
-			PreparedStatement ps2 = con.prepareStatement(count);
-			PreparedStatement ps3 = con.prepareStatement(fare);
-			ResultSet rs1 = ps1.executeQuery();
-			ResultSet rs2 = ps2.executeQuery();
-			ResultSet rs3 = ps3.executeQuery();
-			
-			//Calculate the fare
-			rs1.next();
-			rs3.next();
-			float pricePerStop = ((rs3.getFloat("fare"))/10.0f);
-			float originNum = (float) rs1.getInt("stop_num");
-			rs1.next();
-			float destNum = (float) rs1.getInt("stop_num");
-			float oneWayPrice = (destNum - originNum) * pricePerStop;
-			rs1.close();
-			//Re-deploying script to reset rs1
-			ps1 = con.prepareStatement(tripInfo);
-			rs1 = ps1.executeQuery();
-			
-			rs2.next();
-			String[][] resList = new String[rs2.getInt("tuplesCount")][7];
-			int arrayCount = 0;
-			while(rs3.next()) {
-				resList[arrayCount][0] = rs1.getString("transitLine");
-				resList[arrayCount][1] = Integer.toString(rs1.getInt("trainID"));
-				resList[arrayCount][2] = formatter.format(rs1.getDate("travelDate"));
-				resList[arrayCount][3] = rs1.getString("stationName");
-				resList[arrayCount][4] = rs1.getString("arrival_time");
-				resList[arrayCount][5] = rs1.getString("departure_time");
-				resList[arrayCount][6] = "ONE WAY PRICE: "+ (String) String.valueOf(oneWayPrice);
-				
-				arrayCount++;
-			}
-			con.close();
-			rs1.close();
-			rs2.close();
-			rs3.close();
-			return resList;
-		}catch(Exception e) {
-			System.out.println(e.getMessage());
-			throw e;
-		}
-	}*/
-	
+
+
 	
 	public String[][] getTrainSchedules(String key) throws Exception {
         try {

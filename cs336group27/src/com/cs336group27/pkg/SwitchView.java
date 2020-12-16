@@ -8,21 +8,19 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 
 /**
- * Servlet implementation class ViewPortfolio
+ * Servlet implementation class SwitchView
  */
-@WebServlet("/ViewPortfolio")
-public class ViewPortfolio extends HttpServlet {
+@WebServlet("/SwitchView")
+public class SwitchView extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	
-       
+    private ApplicationDB appDB = new ApplicationDB();
+   
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public ViewPortfolio() {
+    public SwitchView() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -43,6 +41,8 @@ public class ViewPortfolio extends HttpServlet {
 		doGet(request, response);
 		request.setAttribute("currentUser", request.getParameter("user"));
 		request.setAttribute("type", request.getParameter("switch"));
+		String type = (String)request.getAttribute("type");
+		System.out.println(type + "one");
 		RequestDispatcher rd = request.getRequestDispatcher("ViewPortfolio.jsp");
 		rd.forward(request, response);
 	}
