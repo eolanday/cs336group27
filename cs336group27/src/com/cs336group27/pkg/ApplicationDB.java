@@ -490,20 +490,26 @@ public class ApplicationDB {
 	public String[][] getPortfolio(String user, String type) throws Exception {
 		try {
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-			SimpleDateFormat time = new SimpleDateFormat("HH:mm:ss -19:00:00");  
+			SimpleDateFormat time = new SimpleDateFormat("HH:mm:ss +5:00:00 z");  
 
 			ApplicationDB db = new ApplicationDB();	
 			Connection con = db.getConnection();
 			String check = "";
 			String s = "";
 			String preCount = "";
+			String origin = "";
+			String dest = "";
+			String travelDate = "";
+			String query = "";
+			String ortime = "";
+			String desttime = "";
 			String[][] resList;
-			ResultSet rs1,rs2;
+			ResultSet rs1,rs2,rs3,rs4;
 			long millis=System.currentTimeMillis();  
 			Date now = new java.sql.Date(millis); 
 			//System.out.println(formatter.format(now));
 			//System.out.println(user);
-			System.out.println(type + "two");
+			//System.out.println(type + "two");
 			
 			if(type == null || type.equals("past")) {
 				check = "select * from Reservations res inner join Customers cust on res.customerid = cust.customerID inner join Train_Schedule ts on res.scheduleID = ts.scheduleID inner join Stops sp on ts.origin = sp.stationName where cust.username = (?) and Date(travelDate) < (?) order by ts.travelDate, sp.arrival_time;";
@@ -519,18 +525,38 @@ public class ApplicationDB {
 				rs2 = ps2.executeQuery();
 				rs2.next();
 				resList = new String[rs2.getInt("tupleCount")][13];
-				int arrayCount  = 0;
+				int arrayCount = 0;
 				while (rs1.next()) {
+					origin = rs1.getString("origin");
+					dest = rs1.getString("destination");
+					travelDate = formatter.format(rs1.getDate("travelDate"));
+					
 					resList[arrayCount][0]=(Integer.toString(rs1.getInt("reservation_number")));
 					resList[arrayCount][1]=(formatter.format(rs1.getDate("reservation_date")));
-					resList[arrayCount][2]=(formatter.format(rs1.getDate("travelDate")));
+					resList[arrayCount][2]=(travelDate);
 					resList[arrayCount][3]=((rs1.getString("reservation_type")));
 					resList[arrayCount][4]=((rs1.getString("transitLine")));
 					resList[arrayCount][5]=(Integer.toString(rs1.getInt("trainID")));
-					resList[arrayCount][6]=((rs1.getString("origin")));
-					resList[arrayCount][7]=((rs1.getString("destination")));
-					resList[arrayCount][8] =(time.format(rs1.getTime("arrival_time")));
-					resList[arrayCount][9] =(time.format(rs1.getTime("departure_time")));
+					resList[arrayCount][6]=(origin);
+					
+					query = "select arrival_time from Train_Schedule ts inner join Stops sp on ts.transitLine = sp.transitLine where stationName = (?) and travelDate = (?);";
+					PreparedStatement ps3 = con.prepareStatement(query);
+					ps3.setString(1, dest);
+					ps3.setString(2, travelDate);
+					rs3 = ps3.executeQuery();
+					rs3.next();
+					desttime = time.format(rs3.getTime("arrival_time"));
+					
+					PreparedStatement ps4 = con.prepareStatement(query);
+					ps4.setString(1, origin);
+					ps4.setString(2, travelDate);
+					rs4 = ps4.executeQuery();
+					rs4.next();
+					ortime = time.format(rs4.getTime("arrival_time"));
+					
+					resList[arrayCount][7]=(dest);
+					resList[arrayCount][8] =(ortime);
+					resList[arrayCount][9] =(desttime);
 					resList[arrayCount][10]=(Integer.toString(rs1.getInt("total_fare")));
 					resList[arrayCount][11]=((rs1.getString("first_name")));
 					resList[arrayCount][12]=((rs1.getString("last_name")));
@@ -541,6 +567,7 @@ public class ApplicationDB {
 				con.close();
 				rs1.close();
 				rs2.close();
+			
 			}else{
 				check = "select * from Reservations res inner join Customers cust on res.customerid = cust.customerID inner join Train_Schedule ts on res.scheduleID = ts.scheduleID inner join Stops sp on ts.origin = sp.stationName where cust.username = (?) and Date(travelDate) >= (?) order by ts.travelDate, sp.arrival_time;";
 				s = "Reservations res inner join Customers cust on res.customerid = cust.customerID inner join Train_Schedule ts on res.scheduleID = ts.scheduleID inner join Stops sp on ts.origin = sp.stationName where cust.username = (?) and Date(travelDate) >= (?) order by ts.travelDate, sp.arrival_time;";
@@ -554,22 +581,39 @@ public class ApplicationDB {
 				rs1 = ps1.executeQuery();
 				rs2 = ps2.executeQuery();
 				rs2.next();
-				
 				resList = new String[rs2.getInt("tupleCount")][13];
-				int arrayCount  = 0;
+				int arrayCount = 0;
 				while (rs1.next()) {
-					System.out.println(rs1.getTime("departure_time"));
-					System.out.println(time.format(rs1.getTime("departure_time")));
+					origin = rs1.getString("origin");
+					dest = rs1.getString("destination");
+					travelDate = formatter.format(rs1.getDate("travelDate"));
+					
 					resList[arrayCount][0]=(Integer.toString(rs1.getInt("reservation_number")));
 					resList[arrayCount][1]=(formatter.format(rs1.getDate("reservation_date")));
-					resList[arrayCount][2]=(formatter.format(rs1.getDate("travelDate")));
+					resList[arrayCount][2]=(travelDate);
 					resList[arrayCount][3]=((rs1.getString("reservation_type")));
 					resList[arrayCount][4]=((rs1.getString("transitLine")));
 					resList[arrayCount][5]=(Integer.toString(rs1.getInt("trainID")));
-					resList[arrayCount][6]=((rs1.getString("origin")));
-					resList[arrayCount][7]=((rs1.getString("destination")));
-					resList[arrayCount][8] =(time.format(rs1.getTime("arrival_time")));
-					resList[arrayCount][9] =(time.format(rs1.getTime("departure_time")));
+					resList[arrayCount][6]=(origin);
+					
+					query = "select arrival_time from Train_Schedule ts inner join Stops sp on ts.transitLine = sp.transitLine where stationName = (?) and travelDate = (?);";
+					PreparedStatement ps3 = con.prepareStatement(query);
+					ps3.setString(1, dest);
+					ps3.setString(2, travelDate);
+					rs3 = ps3.executeQuery();
+					rs3.next();
+					desttime = time.format(rs3.getTime("arrival_time"));
+					
+					PreparedStatement ps4 = con.prepareStatement(query);
+					ps4.setString(1, origin);
+					ps4.setString(2, travelDate);
+					rs4 = ps4.executeQuery();
+					rs4.next();
+					ortime = time.format(rs4.getTime("arrival_time"));
+					
+					resList[arrayCount][7]=(dest);
+					resList[arrayCount][8] =(ortime);
+					resList[arrayCount][9] =(desttime);
 					resList[arrayCount][10]=(Integer.toString(rs1.getInt("total_fare")));
 					resList[arrayCount][11]=((rs1.getString("first_name")));
 					resList[arrayCount][12]=((rs1.getString("last_name")));
@@ -782,7 +826,7 @@ public int createReservation(String origin, String dest, String date, String tim
 	}
 	
 	
-	/**public String[][] getTrainSchedules(String key) throws Exception {
+	public String[][] getTrainSchedule(String key) throws Exception {
 		try {
 		    ApplicationDB db = new ApplicationDB(); 
 		    Connection con = db.getConnection();
@@ -815,7 +859,7 @@ public int createReservation(String origin, String dest, String date, String tim
 		    System.out.println(e.getMessage());
 		    throw e;
 		}
-	}**/
+	}
 	
 	public String[][] getTrainSchedules(String key) throws Exception {
         try {
