@@ -27,7 +27,7 @@
 	<br>
 	<h3>View Your Reservation Portfolio</h3>
 	<!-- Reservation Portfolio-->
-	<form action="SwitchView" method = "post">
+	<form action="testServlet" method = "post">
 		<div class="container" id="viewPortfolioButton">
 			<input type = "hidden" id = "user" name = "user" value = ${cust.getName()}>
 			<input type = "hidden" id="future" name="switch" value="future">
@@ -35,7 +35,7 @@
 		</div>
 	</form>
 	<br>
-	
+	ß
 	<h4>Have an issue? Browse or ask a question.</h4>
 	<!-- Cancel a Reservation -->
 	<form action="custQuestion.jsp">

@@ -34,11 +34,10 @@
 <body>
 
 
-<<<<<<< HEAD
+
 	<form style='text-align: center;'action="testServlet" method = "post" name = "view_choice">
-=======
-	<form style='text-align: center;'action="SwitchView" method = "post" name = "view_choice">
->>>>>>> dae6936528dc8164a4f0364b06f982ba3bf9edd3
+
+	
 		<div>
 		<label style="font-weight: bold; text-align: center;" for = "view_choice">View:</label>
 		  <input type="radio" id="past" name="switch" value="past">
@@ -62,11 +61,9 @@
 	String type = (String)request.getAttribute("type");
 	//System.out.println(user);
 	//System.out.println(type);
-<<<<<<< HEAD
+
 	String[][] resList = appDB.getPortfolio(user,type);
-=======
-	String[][] resList = appDB.getPortfolio(user, type);
->>>>>>> dae6936528dc8164a4f0364b06f982ba3bf9edd3
+
 		out.print("<p><b>Customer Name</b>: "+resList[0][11]+" "+resList[0][12]+"</p>");
 		out.print("<table style= 'margin-left:auto;margin-right:auto;vertical-align: middle;'>");
 		out.print("<tr>");
