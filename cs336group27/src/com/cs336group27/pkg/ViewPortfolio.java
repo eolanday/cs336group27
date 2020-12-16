@@ -42,6 +42,7 @@ public class ViewPortfolio extends HttpServlet {
 		// TODO Auto-generated method stub
 		doGet(request, response);
 		request.setAttribute("currentUser", request.getParameter("user"));
+		request.setAttribute("type", request.getParameter("switch"));
 		RequestDispatcher rd = request.getRequestDispatcher("ViewPortfolio.jsp");
 		rd.forward(request, response);
 	}
