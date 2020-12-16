@@ -10,16 +10,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet implementation class scheduleSearchServlet
+ * Servlet implementation class SwitchView
  */
-@WebServlet("/scheduleSearchServlet")
-public class scheduleSearchServlet extends HttpServlet {
+@WebServlet("/testServlet")
+public class testServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+    private ApplicationDB appDB = new ApplicationDB();
+   
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public scheduleSearchServlet() {
+    public testServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -38,15 +39,12 @@ public class scheduleSearchServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);
-		//Text Boxes
-		request.setAttribute("start", request.getParameter("origin"));
-		request.setAttribute("end", request.getParameter("destination"));
-		request.setAttribute("travelDate", request.getParameter("travelDate"));
-		
-		//Radio Button value for sorting
-		request.setAttribute("sortType", request.getParameter("sortType"));
-		
-		RequestDispatcher rd = request.getRequestDispatcher("searchSchedule.jsp");
+		request.setAttribute("currentUser", request.getParameter("user"));
+		request.setAttribute("type", request.getParameter("switch"));
+		String type = (String)request.getAttribute("type");
+		System.out.println(type + "one");
+		RequestDispatcher rd = request.getRequestDispatcher("ViewPortfolio.jsp");
 		rd.forward(request, response);
 	}
+
 }

@@ -87,7 +87,7 @@ public class AgeServlet extends HttpServlet {
 					String message3 = "Thank you for making a reservation. Your Reservation Number is: " + res;
 					request.setAttribute("message3", message3);
 				 }else {
-					String message3 = "FATAL DATABASE ERROR";
+					String message3 = "Could not make reservation. Please input correct values.";
 					request.setAttribute("message3", message3);
 				 }
 				
@@ -101,7 +101,7 @@ public class AgeServlet extends HttpServlet {
 					String message4 = "Your total fare is: $" + f;
 					request.setAttribute("message4", message4);
 				 }else {
-					String message4 = "Cannot calculate fare";
+					String message4 = "Cannot calculate fare.";
 					request.setAttribute("message4", message4);
 				 }
 		}catch(Exception e){
