@@ -524,6 +524,15 @@ public class ApplicationDB {
 				rs1 = ps1.executeQuery();
 				rs2 = ps2.executeQuery();
 				rs2.next();
+				
+				System.out.println(rs2.getInt("tupleCount"));
+				if (rs2.getInt("tupleCount") == 0) {
+					resList = new String[1][1];
+					rs1.next();
+					resList[0][0]=("NO DATA");
+					return resList;
+				}
+				
 				resList = new String[rs2.getInt("tupleCount")][13];
 				int arrayCount = 0;
 				while (rs1.next()) {
@@ -545,14 +554,14 @@ public class ApplicationDB {
 					ps3.setString(2, travelDate);
 					rs3 = ps3.executeQuery();
 					rs3.next();
-					desttime = time.format(rs3.getTime("arrival_time"));
+					desttime = rs3.getString("arrival_time");
 					
 					PreparedStatement ps4 = con.prepareStatement(query);
 					ps4.setString(1, origin);
 					ps4.setString(2, travelDate);
 					rs4 = ps4.executeQuery();
 					rs4.next();
-					ortime = time.format(rs4.getTime("arrival_time"));
+					ortime = rs4.getString("arrival_time");
 					
 					resList[arrayCount][7]=(dest);
 					resList[arrayCount][8] =(ortime);
@@ -581,6 +590,14 @@ public class ApplicationDB {
 				rs1 = ps1.executeQuery();
 				rs2 = ps2.executeQuery();
 				rs2.next();
+				System.out.println(rs2.getInt("tupleCount"));
+				if (rs2.getInt("tupleCount") == 0) {
+					resList = new String[1][1];
+					rs1.next();
+					resList[0][0]=("NO DATA");
+					return resList;
+				}
+				
 				resList = new String[rs2.getInt("tupleCount")][13];
 				int arrayCount = 0;
 				while (rs1.next()) {
@@ -602,14 +619,14 @@ public class ApplicationDB {
 					ps3.setString(2, travelDate);
 					rs3 = ps3.executeQuery();
 					rs3.next();
-					desttime = time.format(rs3.getTime("arrival_time"));
+					desttime = rs3.getString("arrival_time");
 					
 					PreparedStatement ps4 = con.prepareStatement(query);
 					ps4.setString(1, origin);
 					ps4.setString(2, travelDate);
 					rs4 = ps4.executeQuery();
 					rs4.next();
-					ortime = time.format(rs4.getTime("arrival_time"));
+					ortime = rs4.getString("arrival_time");
 					
 					resList[arrayCount][7]=(dest);
 					resList[arrayCount][8] =(ortime);
@@ -1077,5 +1094,116 @@ public class ApplicationDB {
             throw e;
         }
 	}
-	
+	public String[][] getTripInfo(String start, String end, String travelDate) throws Exception{
+		try {
+			SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+			ApplicationDB db = new ApplicationDB();
+			Connection con = db.getConnection();
+			
+			//Query to get our table
+			String tripInfo = "SELECT t.transitLine, t.trainID, t.travelDate, s.stationName, s.arrival_time, s.departure_time, t.fare, s.stop_num FROM trainsys1.Stops s, trainsys1.Train_Schedule t WHERE (s.stationName = '"+start+"' OR s.stationName = '"+end+"') AND s.transitLine = t.transitLine AND t.travelDate ='"+travelDate+"';";
+			//Query to return the number of rows in our table
+			String count = "SELECT COUNT(*) tuplesCount FROM trainsys1.Stops s, trainsys1.Train_Schedule t WHERE (s.stationName = '"+start+"' OR s.stationName = '"+end+"') AND s.transitLine = t.transitLine AND t.travelDate ='"+travelDate+"';";
+			//Query to return the total fare of the transit line
+			String fare = "SELECT t.fare FROM trainsys1.Train_Schedule t, trainsys1.Stops s WHERE s.stationName = '"+start+"' AND s.transitLine = t.transitLine AND t.travelDate = '"+travelDate+"';";
+			
+			PreparedStatement ps1 = con.prepareStatement(tripInfo);
+			PreparedStatement ps2 = con.prepareStatement(count);
+			PreparedStatement ps3 = con.prepareStatement(fare);
+			PreparedStatement ps4 = con.prepareStatement(tripInfo);
+			ResultSet rs1 = ps1.executeQuery();
+			ResultSet rs2 = ps2.executeQuery();
+			ResultSet rs3 = ps3.executeQuery();
+			ResultSet rs4 = ps4.executeQuery();
+			
+			//Calculate the fare
+			rs1.next();
+			rs3.next();
+			float pricePerStop = ((rs3.getFloat("fare"))/10.0f);
+			float originNum = (float) rs1.getInt("stop_num");
+			rs1.next();
+			float destNum = (float) rs1.getInt("stop_num");
+			float oneWayPrice = 0.0f;
+			if(originNum >= destNum) {
+				oneWayPrice = ((originNum - destNum) * pricePerStop);
+			}else if(originNum < destNum) {
+				oneWayPrice = (destNum - originNum) * pricePerStop;
+			}
+			
+			DecimalFormat df = new DecimalFormat("#.##");
+            df.setRoundingMode(RoundingMode.CEILING);
+            oneWayPrice = Float.valueOf(df.format(oneWayPrice));
+            
+			
+			rs2.next();
+			String[][] resList = new String[rs2.getInt("tuplesCount")][7];
+			
+			int arrayCount = 0;
+			while(rs4.next()) {
+				resList[arrayCount][0] = rs4.getString("transitLine");
+				resList[arrayCount][1] = Integer.toString(rs4.getInt("trainID"));
+				resList[arrayCount][2] = formatter.format(rs4.getDate("travelDate"));
+				resList[arrayCount][3] = rs4.getString("stationName");
+				resList[arrayCount][4] = rs4.getString("arrival_time");
+				resList[arrayCount][5] = rs4.getString("departure_time");
+				resList[arrayCount][6] = "ONE WAY PRICE: $" + oneWayPrice;
+				arrayCount++;
+			}
+			con.close();
+			rs1.close();
+			rs2.close();
+			rs3.close();
+			rs4.close();
+			return resList;
+		}catch(Exception e) {
+			System.out.print(e);
+			throw e;
+		}
+	}
+	public String[][] getTrainSchedule(String origin, String destination, String travelDate, String sortType) throws Exception{
+		try {
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+			ApplicationDB db = new ApplicationDB();	
+			Connection con = db.getConnection();
+			
+			//Get Transitline
+			String transitLine = "SELECT transitLine FROM trainsys1.Stops s WHERE s.stationName = '"+origin+"';";
+			PreparedStatement ps0 = con.prepareStatement(transitLine);
+			ResultSet rs0 = ps0.executeQuery();
+			rs0.next();
+			transitLine = rs0.getString("transitLine");
+			
+			
+			String transitLineSchedule = "SELECT t.transitLine, t.trainID, t.travelDate, s.stationName, s.arrival_time, s.departure_time, t.fare, s.stop_num FROM trainsys1.Train_Schedule t join trainsys1.Stops s on (s.transitLine = t.transitLine) WHERE s.transitLine = '"+transitLine+"' AND t.travelDate = '"+travelDate+"' order by "+sortType+" asc;";
+			String count = "SELECT COUNT(*) tuplesCount FROM trainsys1.Train_Schedule t join trainsys1.Stops s on (s.transitLine = t.transitLine) WHERE s.transitLine = '"+transitLine+"' AND t.travelDate = '"+travelDate+"' ;";
+			PreparedStatement ps1 = con.prepareStatement(transitLineSchedule);
+			PreparedStatement ps2 = con.prepareStatement(count);
+			ResultSet rs1 = ps1.executeQuery();
+			ResultSet rs2 = ps2.executeQuery();
+			
+			rs2.next();
+			String[][] resList = new String[rs2.getInt("tuplesCount")][8];
+			int arrayCount = 0;
+			while(rs1.next()) {
+				resList[arrayCount][0] = rs1.getString("transitLine");
+				resList[arrayCount][1] = Integer.toString(rs1.getInt("trainID"));
+				resList[arrayCount][2] = formatter.format(rs1.getDate("travelDate"));
+				resList[arrayCount][3] = rs1.getString("stationName");
+				resList[arrayCount][4] = rs1.getString("arrival_time") + "";
+				resList[arrayCount][5] = rs1.getString("departure_time") + "";
+				resList[arrayCount][6] = Float.toString(rs1.getFloat("fare"));
+				resList[arrayCount][7] = Integer.toString(rs1.getInt("stop_num"));
+				arrayCount++;
+			}
+			
+			con.close();
+			rs0.close();
+			rs1.close();
+			rs2.close();
+			return resList;
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+			throw e;
+		}
+	}
 }
