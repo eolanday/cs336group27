@@ -34,7 +34,7 @@
 <body>
 
 
-	<form style='text-align: center;'action="ViewPortfolio" method = "post" name = "view_choice">
+	<form style='text-align: center;'action="SwitchView" method = "post" name = "view_choice">
 		<div>
 		<label style="font-weight: bold; text-align: center;" for = "view_choice">View:</label>
 		  <input type="radio" id="past" name="switch" value="past">
