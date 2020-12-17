@@ -87,7 +87,7 @@ public class AgeServlet extends HttpServlet {
 					String message3 = "Thank you for making a reservation. Your Reservation Number is: " + res;
 					request.setAttribute("message3", message3);
 				 }else {
-					String message3 = "Could not make reservation. Please input correct values.";
+					 String message3 = "Could not make reservation. Please input correct values.";
 					request.setAttribute("message3", message3);
 				 }
 				

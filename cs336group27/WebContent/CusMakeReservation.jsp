@@ -45,7 +45,7 @@
 		
 		<!-- Enter Departure Date -->
 			<label for="resdate"><b>Departure Date:</b></label>
-			<input type="text" placeholder="YYYY-MM-DD" name="resdate">
+			<input type="text" placeholder="yyyy-MM-dd" name="resdate">
 			<br><br>
 			
 		<!-- Enter Departure Time -->

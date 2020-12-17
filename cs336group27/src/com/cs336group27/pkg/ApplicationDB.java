@@ -671,7 +671,7 @@ public class ApplicationDB {
 		try {
 			ApplicationDB db = new ApplicationDB();	
 			Connection con = db.getConnection();
-			Float fare = 16.00f;
+			Float fare = 0.00f;
 			
 			// Get transitLine
 			String query = "select ts.transitLine from Train_Schedule ts inner join Stops sp  on ts.transitLine = sp.transitLine where stationName = (?) and travelDate = (?);";
@@ -695,22 +695,29 @@ public class ApplicationDB {
 			ResultSet rs = ps.executeQuery();
 			rs.next();
 			fare = rs.getFloat("total_fare");
-			
+			//System.out.println(fare + " f");
+
 			// Round Trip Ticket
 			if(type.equals("round_trip")) {
 				fare *= 2.0f;
 			}
-			
+			//System.out.println(fare + " r");
+
 			// Discounts
 			if(age.equals("0-17")) {
 				fare *= 0.75f;
 			}else if(age.equals("65+")){
 				fare *= 0.65f;
 			}
+			
+			//System.out.println(fare + " a");
+			
 			if(!(disabled == null)) {
-				fare *= 0.50f;			
+				fare *= 0.50f;
 			}
 			
+			//System.out.println(fare + " d");
+
 			if (fare < 0) {
 				fare *= -1;
 			}
@@ -728,19 +735,20 @@ public class ApplicationDB {
 			throw e;
 		}
 	}
-	public int createReservation(String origin, String dest, String date, String time, String user, String type, String age, String disable) {
+	public int createReservation(String origin, String dest, String date, String time, String user, String type, String age, String disabled) {
 		
 		try {
 			ApplicationDB db = new ApplicationDB();	
 			Connection con = db.getConnection();
 			Float fare = 0.00f;
 			String query = "";
+			String dtype = "";
 			long millis=System.currentTimeMillis();  
 			Date now = new java.sql.Date(millis); 
 			ResultSet rsc, rsd;
 			//System.out.println(now);
 			//System.out.println(user);
-			
+		 
 			// Get transitLine
 			query = "select ts.transitLine from Train_Schedule ts inner join Stops sp  on ts.transitLine = sp.transitLine where stationName = (?) and travelDate = (?);";
 			PreparedStatement ps4 = con.prepareStatement(query);
@@ -790,7 +798,7 @@ public class ApplicationDB {
 			int sched = rsa.getInt("scheduleID");
 			
 			// Fare Calculator
-			fare = calculateFare(origin, dest, date, type, age, disable);
+			fare = calculateFare(origin, dest, date, type, age, disabled);
 			
 			// Inserts reservation
 			query= "insert into Reservations (reservation_date, total_fare, trainID, scheduleID, customerid, reservation_type) values((?),(?),(?),(?),(?),(?))";
@@ -805,6 +813,34 @@ public class ApplicationDB {
 			if (rows <= 0) {
 				return -1;
 			}
+			
+			if(age.equals("0-17")) {
+				dtype = "child";
+			}else if(age.equals("65+")){
+				dtype = "senior";
+			}
+			//System.out.println(dtype);
+
+		
+			if(!(disabled == null)) {
+				dtype = "disabled_adult";
+				if(age.equals("0-17")) {
+					dtype = "disabled_child";
+				}else if(age.equals("65+")){
+					dtype = "disabled_senior";
+				}
+			}
+			
+			if(!(dtype.equals(""))) {
+				
+				//Insert discount into receives
+				query= "insert into receives (customerID, dtype) values((?),(?));";
+				PreparedStatement ps6 = con.prepareStatement(query);
+				ps6.setString(1, id);
+				ps6.setString(2, dtype);
+				ps6.executeUpdate();
+			}
+			
 			
 			// Get highest res_num
 			query = "select reservation_number from Reservations order by reservation_number desc";
