@@ -830,8 +830,8 @@ public class ApplicationDB {
             ApplicationDB db = new ApplicationDB(); 
             Connection con = db.getConnection();
             key = key == null ? "":key;
-            String check = "SELECT * FROM Train_Schedule" + (key == "" ? "": (" where origin='" + key + "' or destination='" + key +"'"));
-            String preCount = "select count(*) tupleCount from Train_Schedule" + (key == "" ? "": (" where origin='" + key + "' or destination='" + key +"'"));
+            String check = "SELECT * FROM Train_Schedule" + (key == "" ? "": (" where origin='" + key + "' or destination='" + key +"'")) + "order by travelDate";
+            String preCount = "select count(*) tupleCount from Train_Schedule" + (key == "" ? "": (" where origin='" + key + "' or destination='" + key +"'")) + "order by travelDate";
             PreparedStatement ps1 = con.prepareStatement(check);
             PreparedStatement ps2 = con.prepareStatement(preCount);
             ResultSet rs1 = ps1.executeQuery();
