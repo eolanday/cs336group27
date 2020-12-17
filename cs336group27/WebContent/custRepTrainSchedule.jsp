@@ -25,7 +25,7 @@
 		<input type="number" placeholder="Enter trainID" name="atid" required>
 		<br>
 		<label for="sid"><b>Enter Travel Date</b></label>
-		<input type="number" placeholder="Enter travelDate" name="adate" pattern="\d{4}-\d{1,2}-\d{1,2}" required>
+		<input type="text" placeholder="Enter travelDate" name="adate" pattern="\d{4}-\d{1,2}-\d{1,2}" required>
 		<br>
 		<div class="container" id="Edit">
 			<button type="submit" name="button" value="add">Add Train Schedule</button>
@@ -48,7 +48,7 @@
 		<input type="number" placeholder="Enter scheduleID" name="usid" required>
 		<br>
 		<label for="sid"><b>Enter New Transit Line</b></label>
-		<input type="text" placeholder="Enter scheduleName" name="utline">
+		<input type="text" placeholder="Enter transitLine" name="utline">
 		<br>
 		<label for="sid"><b>Enter New Fare</b></label>
 		<input type="number" min="0.01" step="0.01" placeholder="Enter fare" name="ufare">
@@ -57,7 +57,7 @@
 		<input type="number" placeholder="Enter trainID" name="utid">
 		<br>
 		<label for="sid"><b>Enter New Travel Date</b></label>
-		<input type="number" placeholder="Enter travelDate" name="udate" pattern="\d{4}-\d{1,2}-\d{1,2}">
+		<input type="text" placeholder="Enter travelDate" name="udate" pattern="\d{4}-\d{1,2}-\d{1,2}">
 		<br>
 		<div class="container" id="Edit">
 			<button type="submit" name="button" value="update">Update Train Schedule</button>

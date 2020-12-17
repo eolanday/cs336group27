@@ -866,8 +866,8 @@ public class ApplicationDB {
             ApplicationDB db = new ApplicationDB(); 
             Connection con = db.getConnection();
             key = key == null ? "":key;
-            String check = "SELECT * FROM Train_Schedule" + (key == "" ? "": (" where origin='" + key + "' or destination='" + key +"'"));
-            String preCount = "select count(*) tupleCount from Train_Schedule" + (key == "" ? "": (" where origin='" + key + "' or destination='" + key +"'"));
+            String check = "SELECT * FROM Train_Schedule" + (key == "" ? "": (" where origin='" + key + "' or destination='" + key +"'")) + " order by travelDate";
+            String preCount = "select count(*) tupleCount from Train_Schedule" + (key == "" ? "": (" where origin='" + key + "' or destination='" + key +"'")) + " order by travelDate";
             PreparedStatement ps1 = con.prepareStatement(check);
             PreparedStatement ps2 = con.prepareStatement(preCount);
             ResultSet rs1 = ps1.executeQuery();
@@ -972,13 +972,13 @@ public class ApplicationDB {
             }
             
             if(!tdate.equals("")) {
-                String add = "update Train_Schedule set travelDate=;" + trainID + "' where scheduleID=" + sid + ";";
+                String add = "update Train_Schedule set travelDate='" + tdate + "' where scheduleID=" + sid + ";";
                 PreparedStatement ps1 = con.prepareStatement(add);
                 ps1.execute();
             }
             
             con.close();
-            this.autoUpdateTrainSchedule(sid,tline);
+            if(!tline.equals("")) this.autoUpdateTrainSchedule(sid,tline);
             return true;
         }catch(Exception e) {
             System.out.println(e.getMessage());
@@ -1101,7 +1101,7 @@ public class ApplicationDB {
             Connection con = db.getConnection();
             
             String add = "update Questions set employeeID=" + eid + ",reply='" + reply + "',replyDate=CURRENT_TIMESTAMP()"
-                    + "where qid=" + qid + ";";
+                    + " where qid=" + qid + ";";
             PreparedStatement ps1 = con.prepareStatement(add);
             ps1.execute();
             
@@ -1137,7 +1137,7 @@ public class ApplicationDB {
                 add = add + " where r.reservation_date='" + date + "'";
                 preCount = preCount + " where r.reservation_date='" + date + "'";
             }
-            System.out.println(add);
+            add = add + " order by r.reservation_date";
             PreparedStatement ps1 = con.prepareStatement(add);
             PreparedStatement ps2 = con.prepareStatement(preCount);
             ResultSet rs1 = ps1.executeQuery();
