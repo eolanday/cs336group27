@@ -1101,7 +1101,7 @@ public class ApplicationDB {
                 add = add + " where r.reservation_date='" + date + "'";
                 preCount = preCount + " where r.reservation_date='" + date + "'";
             }
-            System.out.println(add);
+            add = add + " order by r.reservation_date";
             PreparedStatement ps1 = con.prepareStatement(add);
             PreparedStatement ps2 = con.prepareStatement(preCount);
             ResultSet rs1 = ps1.executeQuery();
