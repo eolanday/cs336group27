@@ -942,7 +942,7 @@ public class ApplicationDB {
             }
             
             con.close();
-            this.autoUpdateTrainSchedule(sid,tline);
+            if(!tline.equals("")) this.autoUpdateTrainSchedule(sid,tline);
             return true;
         }catch(Exception e) {
             System.out.println(e.getMessage());
