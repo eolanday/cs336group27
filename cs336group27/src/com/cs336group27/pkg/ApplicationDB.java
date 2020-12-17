@@ -936,7 +936,7 @@ public class ApplicationDB {
             }
             
             if(!tdate.equals("")) {
-                String add = "update Train_Schedule set travelDate=;" + trainID + "' where scheduleID=" + sid + ";";
+                String add = "update Train_Schedule set travelDate=" + trainID + "' where scheduleID=" + sid + ";";
                 PreparedStatement ps1 = con.prepareStatement(add);
                 ps1.execute();
             }
