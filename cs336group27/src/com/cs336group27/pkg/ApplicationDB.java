@@ -1065,7 +1065,7 @@ public class ApplicationDB {
             Connection con = db.getConnection();
             
             String add = "update Questions set employeeID=" + eid + ",reply='" + reply + "',replyDate=CURRENT_TIMESTAMP()"
-                    + "where qid=" + qid + ";";
+                    + " where qid=" + qid + ";";
             PreparedStatement ps1 = con.prepareStatement(add);
             ps1.execute();
             
