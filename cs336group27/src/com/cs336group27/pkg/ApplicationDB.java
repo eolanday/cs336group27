@@ -673,7 +673,7 @@ public class ApplicationDB {
 			Connection con = db.getConnection();
 			Float fare = 16.00f;
 			
-			
+			// Get transitLine
 			String query = "select ts.transitLine from Train_Schedule ts inner join Stops sp  on ts.transitLine = sp.transitLine where stationName = (?) and travelDate = (?);";
 			PreparedStatement ps1 = con.prepareStatement(query);
 			ps1.setString(1, origin);
@@ -710,6 +710,11 @@ public class ApplicationDB {
 			if(!(disabled == null)) {
 				fare *= 0.50f;			
 			}
+			
+			if (fare < 0) {
+				fare *= -1;
+			}
+			
 			DecimalFormat df = new DecimalFormat("#.##");
 			df.setRoundingMode(RoundingMode.CEILING);
 			String f = df.format(fare);
@@ -732,8 +737,38 @@ public class ApplicationDB {
 			String query = "";
 			long millis=System.currentTimeMillis();  
 			Date now = new java.sql.Date(millis); 
-			System.out.println(now);
-			System.out.println(user);
+			ResultSet rsc, rsd;
+			//System.out.println(now);
+			//System.out.println(user);
+			
+			// Get transitLine
+			query = "select ts.transitLine from Train_Schedule ts inner join Stops sp  on ts.transitLine = sp.transitLine where stationName = (?) and travelDate = (?);";
+			PreparedStatement ps4 = con.prepareStatement(query);
+			ps4.setString(1, origin);
+			ps4.setString(2, date);
+			rsc = ps4.executeQuery();
+			rsc.next();
+			String line = rsc.getString("transitLine");			
+			
+			// If going backwards, switch origin and destination. If same origin and destination, return error.
+			query = "select stop_num from Stops where transitLine = (?) and stationName = (?) or stationName = (?);";
+			PreparedStatement ps5 = con.prepareStatement(query);
+			ps5.setString(1, line);
+			ps5.setString(2, origin);
+			ps5.setString(3, dest);
+		    rsd = ps5.executeQuery();
+			rsd.next();
+			int start = rsd.getInt("stop_num");
+			rsd.next();
+			int end = rsd.getInt("stop_num");
+			if(end-start < 0) {
+				String temp = "";
+				temp = dest;
+				dest = origin;
+				origin = temp;
+			} else if (end == start) {
+				return -1;
+			}
 			
 			// Gets customerid to find reservation_number
 			query = "select customerID from Customers where username = (?)";
@@ -744,8 +779,7 @@ public class ApplicationDB {
 			String id = Integer.toString(rs.getInt("customerID"));
 
 			// Get trainID, scheduleID, transitLine
-			query = "select trainID, scheduleID, ts.transitLine, arrival_time from Train_Schedule ts inner join Stops sp  on ts.transitLine = sp.transitLine where stationName = (?) and travelDate = (?) and arrival_time = (?);";
-			
+			query = "select trainID, scheduleID, arrival_time from Train_Schedule ts inner join Stops sp  on ts.transitLine = sp.transitLine where stationName = (?) and travelDate = (?) and arrival_time = (?);";
 			PreparedStatement ps1 = con.prepareStatement(query);
 			ps1.setString(1, origin);
 			ps1.setString(2, date);
@@ -782,6 +816,8 @@ public class ApplicationDB {
 			rs.close();
 			rsa.close();
 			rsb.close();
+			rsc.close();
+			rsd.close();
 			con.close();
 			return rows;
 		}catch(Exception e) {
