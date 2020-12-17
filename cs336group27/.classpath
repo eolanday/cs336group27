@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="/Users/jeffreysamson/Downloads/apache-tomcat-7.0.107/lib/servlet-api.jar">
+	<classpathentry kind="lib" path="C:/Users/rahim/Documents/Code/lib/servlet-api.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>

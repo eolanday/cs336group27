@@ -524,6 +524,15 @@ public class ApplicationDB {
 				rs1 = ps1.executeQuery();
 				rs2 = ps2.executeQuery();
 				rs2.next();
+				
+				System.out.println(rs2.getInt("tupleCount"));
+				if (rs2.getInt("tupleCount") == 0) {
+					resList = new String[1][1];
+					rs1.next();
+					resList[0][0]=("NO DATA");
+					return resList;
+				}
+				
 				resList = new String[rs2.getInt("tupleCount")][13];
 				int arrayCount = 0;
 				while (rs1.next()) {
@@ -545,14 +554,14 @@ public class ApplicationDB {
 					ps3.setString(2, travelDate);
 					rs3 = ps3.executeQuery();
 					rs3.next();
-					desttime = time.format(rs3.getTime("arrival_time"));
+					desttime = rs3.getString("arrival_time");
 					
 					PreparedStatement ps4 = con.prepareStatement(query);
 					ps4.setString(1, origin);
 					ps4.setString(2, travelDate);
 					rs4 = ps4.executeQuery();
 					rs4.next();
-					ortime = time.format(rs4.getTime("arrival_time"));
+					ortime = rs4.getString("arrival_time");
 					
 					resList[arrayCount][7]=(dest);
 					resList[arrayCount][8] =(ortime);
@@ -581,6 +590,14 @@ public class ApplicationDB {
 				rs1 = ps1.executeQuery();
 				rs2 = ps2.executeQuery();
 				rs2.next();
+				System.out.println(rs2.getInt("tupleCount"));
+				if (rs2.getInt("tupleCount") == 0) {
+					resList = new String[1][1];
+					rs1.next();
+					resList[0][0]=("NO DATA");
+					return resList;
+				}
+				
 				resList = new String[rs2.getInt("tupleCount")][13];
 				int arrayCount = 0;
 				while (rs1.next()) {
@@ -602,14 +619,14 @@ public class ApplicationDB {
 					ps3.setString(2, travelDate);
 					rs3 = ps3.executeQuery();
 					rs3.next();
-					desttime = time.format(rs3.getTime("arrival_time"));
+					desttime = rs3.getString("arrival_time");
 					
 					PreparedStatement ps4 = con.prepareStatement(query);
 					ps4.setString(1, origin);
 					ps4.setString(2, travelDate);
 					rs4 = ps4.executeQuery();
 					rs4.next();
-					ortime = time.format(rs4.getTime("arrival_time"));
+					ortime = rs4.getString("arrival_time");
 					
 					resList[arrayCount][7]=(dest);
 					resList[arrayCount][8] =(ortime);

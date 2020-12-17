@@ -63,7 +63,19 @@
 	//System.out.println(type);
 
 	String[][] resList = appDB.getPortfolio(user,type);
-
+	if(resList[0][0].equals("NO DATA")){
+		out.print("<table style= 'margin-left:auto;margin-right:auto;vertical-align: middle;'>");
+		out.print("<tr>");
+		out.print("<td>");
+		out.print("<b>Reservations</b>");
+		out.print("</td>");
+		out.print("</tr>");
+		out.print("<tr>");
+		out.print("<td style='text-align: center;'>");
+		out.print(resList[0][0]);
+		out.print("</td>");
+		out.print("</tr>");
+	}else{
 		out.print("<p><b>Customer Name</b>: "+resList[0][11]+" "+resList[0][12]+"</p>");
 		out.print("<table style= 'margin-left:auto;margin-right:auto;vertical-align: middle;'>");
 		out.print("<tr>");
@@ -138,7 +150,7 @@
 			out.print("</td>");
 			out.print("</tr>");
 		}
-	
+	}
 	out.print("</table>");
 	%>
 	
