@@ -51,14 +51,15 @@
 
 	<br>
 	<form action="scheduleSearchServlet" method='post'>
+		
 
-		Origin: <input type="text" name="origin" placeholder="*City* Station">
+		Origin: <input type="text" name="origin" placeholder="Enter Proper Station Name">
 		<br />
-		Destination: <input type="text" name="destination" placeholder="*City* Station">
+		Destination: <input type="text" name="destination" placeholder="Enter Proper Station Name">
 		<br />
 		Travel Date: <input type="text" name="travelDate" placeholder="yyyy-mm-dd">
 		<br /> 
-			<input type="radio" id="fare" name="sortType" value="fare">
+			<input type="radio" id="fare" name="sortType" value="stop_num">
 		  	<label for="fare">Sort by Fare</label>
 		<br/>
 			<input type="radio" id="arrival_time" name="sortType" value="arrival_time">

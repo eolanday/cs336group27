@@ -118,7 +118,7 @@
 		out.print("Departure Time");
 		out.print("</td></h4>");
 		out.print("<td><h4>");
-		out.print("Fare");
+		out.print("One Way Fare From Origin");
 		out.print("</td></h4>");
 		out.print("<td width=30\'%'><h4>");
 		out.print("Stop Number");
