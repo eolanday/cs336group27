@@ -566,7 +566,7 @@ public class ApplicationDB {
 					resList[arrayCount][7]=(dest);
 					resList[arrayCount][8] =(ortime);
 					resList[arrayCount][9] =(desttime);
-					resList[arrayCount][10]=(Integer.toString(rs1.getInt("total_fare")));
+					resList[arrayCount][10]=(Float.toString(rs1.getFloat("total_fare")));
 					resList[arrayCount][11]=((rs1.getString("first_name")));
 					resList[arrayCount][12]=((rs1.getString("last_name")));
 
@@ -631,7 +631,7 @@ public class ApplicationDB {
 					resList[arrayCount][7]=(dest);
 					resList[arrayCount][8] =(ortime);
 					resList[arrayCount][9] =(desttime);
-					resList[arrayCount][10]=(Integer.toString(rs1.getInt("total_fare")));
+					resList[arrayCount][10]=(Float.toString(rs1.getFloat("total_fare")));
 					resList[arrayCount][11]=((rs1.getString("first_name")));
 					resList[arrayCount][12]=((rs1.getString("last_name")));
 
