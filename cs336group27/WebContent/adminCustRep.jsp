@@ -41,6 +41,9 @@
 	out.print("<td>");
 	out.print("StationID");
 	out.print("</td>");
+	out.print("<td>");
+	out.print("Manager");
+	out.print("</td>");
 	out.print("</tr>");
 	for(int i = 0; i<custReps.length;i++) {
 		out.print("<tr>");
@@ -64,6 +67,9 @@
 		out.print("</td>");
 		out.print("<td>");
 		out.print(custReps[i][6]);
+		out.print("</td>");
+		out.print("<td>");
+		out.print(custReps[i][7]);
 		out.print("</td>");
 		out.print("</tr>");
 	}

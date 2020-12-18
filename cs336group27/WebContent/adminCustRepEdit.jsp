@@ -44,6 +44,9 @@
 		<br>
 		<label for="stationID"><b>StationID</b></label>
 		<input type="text" value=<%out.print(repInfo[6]);%> name="stationID" required>
+		<br>
+		<label for="manager"><b>Manager</b></label>
+		<input type="number" value=<%out.print(Integer.parseInt(repInfo[8]));%> name="manager" required>
 		<br><br>
 		<button type="submit">Save Information</button> ${message}
 	</div>

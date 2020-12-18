@@ -51,6 +51,9 @@
 		<br><br>
 		<label for="custrep"> Customer Representative</label>
 		<input type="checkbox" id="custrep" name="custrep" value="custrep">
+		<label for="manager"><b>Manager ID</b></label>
+		<input type="number" placeholder="Enter Manager" name="manager">
+		<br>
 		<br>
 		<label for="admin"> Administrator</label>
 		<input type="checkbox" id="admin" name="admin" value="admin">

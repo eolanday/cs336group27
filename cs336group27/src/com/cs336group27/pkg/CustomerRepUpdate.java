@@ -39,18 +39,50 @@ public class CustomerRepUpdate extends HttpServlet {
 		// TODO Auto-generated method stub
 		doGet(request, response);
 		if(request.getParameter("email").contains("@")) {
-			 int rowCount = appDB.updateCustomerRep(request.getParameter("empID"), request.getParameter("ssn"), request.getParameter("firstName"), request.getParameter("lastName"), request.getParameter("email"), request.getParameter("uname"), request.getParameter("password"), request.getParameter("stationID"));
-			 if(rowCount > 0) {
-				String message = "Customer Representative Updated!";
+			System.out.println(request.getParameter("manager"));
+			int managerCheck = appDB.managerExistence(request.getParameter("manager"));
+			if(managerCheck >= 1) {
+				int stationCheck = appDB.stationExistence(request.getParameter("stationID"));
+				if(stationCheck >= 1) {
+					 int rowCount = appDB.updateCustomerRep(request.getParameter("empID"), request.getParameter("ssn"), request.getParameter("firstName"), request.getParameter("lastName"), request.getParameter("email"), request.getParameter("uname"), request.getParameter("password"), request.getParameter("stationID"));
+					 if(rowCount > 0) {
+						rowCount = appDB.setManager(request.getParameter("empID"), request.getParameter("manager"));
+						if(rowCount>0) {
+							String message = "Customer Representative Updated!";
+							request.setAttribute("message", message);
+							RequestDispatcher rd = request.getRequestDispatcher("adminCustRepEdit.jsp");
+							rd.forward(request, response);
+						}else {
+							String message = "FATAL DATABASE ERROR";
+							request.setAttribute("message", message);
+							RequestDispatcher rd = request.getRequestDispatcher("adminCustRepEdit.jsp");
+							rd.forward(request, response);
+							
+						}
+
+					 }else {
+						String message = "FATAL DATABASE ERROR";
+						request.setAttribute("message", message);
+						RequestDispatcher rd = request.getRequestDispatcher("adminCustRepEdit.jsp");
+						rd.forward(request, response);
+					 }
+					
+					
+				}else {
+					String message = "Invalid Station";
+					request.setAttribute("message", message);
+					RequestDispatcher rd = request.getRequestDispatcher("adminCustRepEdit.jsp");
+					rd.forward(request, response);
+					
+				}
+
+			}else {
+				String message = "Invalid Manager";
 				request.setAttribute("message", message);
 				RequestDispatcher rd = request.getRequestDispatcher("adminCustRepEdit.jsp");
 				rd.forward(request, response);
-			 }else {
-				String message = "FATAL DATABASE ERROR";
-				request.setAttribute("message", message);
-				RequestDispatcher rd = request.getRequestDispatcher("adminCustRepEdit.jsp");
-				rd.forward(request, response);
-			 }
+			}
+
 		}else {
 			String message = "Invalid Email";
 			request.setAttribute("message", message);

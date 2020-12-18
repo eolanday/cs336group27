@@ -174,6 +174,46 @@ public class ApplicationDB {
 			return -1;
 		}
 	}
+	public int stationExistence(String u) {
+		try {
+			ApplicationDB db = new ApplicationDB();	
+			Connection con = db.getConnection();
+			String check = "";
+			check = "select count(*) ct from Stations where stationID = (?)";
+			PreparedStatement ps = con.prepareStatement(check);
+			ps.setString(1, u);
+			ResultSet rs = ps.executeQuery();
+			rs.next();
+			int userCount = rs.getInt("ct");
+			con.close();
+			rs.close();
+			return userCount;
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+			return -1;
+		}
+	}
+	public int managerExistence(String u) {
+		try {
+			ApplicationDB db = new ApplicationDB();	
+			Connection con = db.getConnection();
+			String check = "";
+			check = "select count(*) ct from Employees where employeeID = (?) and isAdmin = 'Yes';";
+			PreparedStatement ps = con.prepareStatement(check);
+			ps.setInt(1, Integer.parseInt(u));
+			ResultSet rs = ps.executeQuery();
+			rs.next();
+			int userCount = rs.getInt("ct");
+			System.out.println(userCount);
+			con.close();
+			rs.close();
+			return userCount;
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+			return -1;
+		}
+		
+	}
 	public int createCustomerUser(String fn, String ln, String email, String uname, String pw) {
 		
 		try {
@@ -206,6 +246,9 @@ public class ApplicationDB {
 		try {
 			ApplicationDB db = new ApplicationDB();	
 			Connection con = db.getConnection();
+			String query;
+			PreparedStatement ps3;
+			ResultSet rs3 = null;
 			String check = "select * from Employees where isCusRep = 'Yes'";
 			String preCount = "select count(*) counts from Employees where isCusRep = 'Yes'";
 			PreparedStatement ps1 = con.prepareStatement(check);
@@ -213,7 +256,7 @@ public class ApplicationDB {
 			ResultSet rs1 = ps1.executeQuery();
 			ResultSet rs2 = ps2.executeQuery();
 			rs2.next();
-			String[][] custReps = new String[rs2.getInt("counts")][7];
+			String[][] custReps = new String[rs2.getInt("counts")][8];
 			int arrayCount  = 0;
 			while (rs1.next()) {
 				custReps[arrayCount][0]=(rs1.getString("employeeID"));
@@ -223,11 +266,18 @@ public class ApplicationDB {
 				custReps[arrayCount][4]=(rs1.getString("ssn"));
 				custReps[arrayCount][5]=(rs1.getString("email"));
 				custReps[arrayCount][6]=(rs1.getString("stationID"));
+				query = "select adminID from manages where cusrepID = (?)";
+				ps3 = con.prepareStatement(query);
+				ps3.setInt(1, Integer.parseInt(rs1.getString("employeeID")));
+				rs3 = ps3.executeQuery();
+				rs3.next();
+				custReps[arrayCount][7] = String.valueOf(rs3.getInt("adminID"));
 				arrayCount++;
 			}
 			con.close();
 			rs1.close();
 			rs2.close();
+			rs3.close();
 			return custReps;
 		}catch(Exception e) {
 			System.out.println(e.getMessage());
@@ -243,7 +293,7 @@ public class ApplicationDB {
 			ps.setString(1, Integer.toString(eid));
 			ResultSet rs = ps.executeQuery();
 			rs.next();
-			String[] repInfo = new String[8];		
+			String[] repInfo = new String[9];		
 			repInfo[0]=(rs.getString("employeeID"));
 			repInfo[1]=(rs.getString("first_name"));
 			repInfo[2]=(rs.getString("last_name"));
@@ -252,6 +302,12 @@ public class ApplicationDB {
 			repInfo[5]=(rs.getString("email"));
 			repInfo[6]=(rs.getString("stationID"));
 			repInfo[7]=(rs.getString("password_employee"));
+			query = "select adminID from manages where cusrepID = (?)";
+			ps = con.prepareStatement(query);
+			ps.setInt(1, Integer.parseInt(rs.getString("employeeID")));
+			rs = ps.executeQuery();
+			rs.next();
+			repInfo[8] = String.valueOf(rs.getInt("adminID"));
 			con.close();
 			rs.close();
 			return repInfo;
@@ -278,6 +334,11 @@ public class ApplicationDB {
 			ps.setInt(7, Integer.parseInt(stationID));
 			ps.setInt(8, Integer.parseInt(id));
 			int rows = ps.executeUpdate();
+			query = "update worksAt set stationID = (?) where employeeID = (?)";
+			ps = con.prepareStatement(query);
+			ps.setInt(1, Integer.parseInt(stationID));
+			ps.setInt(2, Integer.parseInt(id));
+			rows = ps.executeUpdate();
 			query ="SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ";
 			stmt.executeQuery(query);
 			stmt.close();
@@ -295,10 +356,18 @@ public class ApplicationDB {
 			Statement stmt = con.createStatement();
 			String query ="SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED";
 			stmt.executeQuery(query);
-			query = "delete from Employees where employeeID = (?)";
+			query = "delete from worksAt where employeeID = (?)";
 			PreparedStatement ps = con.prepareStatement(query);
 			ps.setInt(1, Integer.parseInt(id));
 			int rows = ps.executeUpdate();
+			query = "delete from manages where cusrepID = (?)";
+			ps = con.prepareStatement(query);
+			ps.setInt(1, Integer.parseInt(id));
+			rows = ps.executeUpdate();
+			query = "delete from Employees where employeeID = (?)";
+			ps = con.prepareStatement(query);
+			ps.setInt(1, Integer.parseInt(id));
+			rows = ps.executeUpdate();
 			query ="SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ";
 			stmt.executeQuery(query);
 			stmt.close();
@@ -327,8 +396,8 @@ public class ApplicationDB {
 			ps.setString(5, uname);
 			ps.setString(6, pw);
 			ps.setInt(7, Integer.parseInt(stationID));
-			ps.setString(8, custRep);
-			ps.setString(9, admin);
+			ps.setString(8, admin);
+			ps.setString(9, custRep);
 			int rows = ps.executeUpdate();
 			if (rows <= 0) {
 				return -1;
@@ -339,6 +408,14 @@ public class ApplicationDB {
 			ResultSet rs = ps.executeQuery();
 			rs.next();
 			rows=(rs.getInt("employeeID"));
+			query = "insert into worksAt(employeeID,stationID) values ((?),(?));";
+			ps = con.prepareStatement(query);
+			ps.setInt(1, rows);
+			ps.setInt(2, Integer.parseInt(stationID));
+			int rows1 = ps.executeUpdate();
+			if (rows1<0) {
+				rows = -1;
+			}
 			query ="SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ";
 			stmt.executeQuery(query);
 			stmt.close();
@@ -346,6 +423,49 @@ public class ApplicationDB {
 			con.close();
 			return rows;
 		}catch(Exception e) {
+			System.out.println(e.getMessage());
+			return -1;
+		}
+	}
+	public int setManager(String cusrepID, String adminID) {
+		try {
+			System.out.println("CustomerRepID:"+cusrepID);
+			ApplicationDB db = new ApplicationDB();	
+			Connection con = db.getConnection();
+			Statement stmt = con.createStatement();
+			ResultSet rs;
+			int rows = -1;
+			String query ="SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED";
+			stmt.executeQuery(query);
+			query = "select count(*) as ct from manages where cusrepID = (?);";
+			PreparedStatement ps = con.prepareStatement(query);
+			ps.setInt(1,Integer.parseInt(cusrepID));
+			rs = ps.executeQuery();
+			rs.next();
+			rows = rs.getInt("ct");
+			
+			if(rows >= 1) {
+				System.out.println("update");
+				query = "update manages set adminID = (?) where cusrepID = (?)";
+				ps = con.prepareStatement(query);
+				ps.setInt(1, Integer.parseInt(adminID));
+				ps.setInt(2, Integer.parseInt(cusrepID));
+				rows = ps.executeUpdate();
+			}else {
+				System.out.println("new");
+				query = "insert into manages(cusrepID,adminID) values ((?),(?));";
+				ps = con.prepareStatement(query);
+				ps.setInt(1, Integer.parseInt(cusrepID));
+				ps.setInt(2, Integer.parseInt(adminID));
+				rows = ps.executeUpdate();
+			}
+			query ="SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ";
+			stmt.executeQuery(query);
+			stmt.close();
+			rs.close();
+			con.close();
+			return rows;
+		}catch(Exception e){
 			System.out.println(e.getMessage());
 			return -1;
 		}
@@ -491,7 +611,6 @@ public class ApplicationDB {
 		try {
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 			SimpleDateFormat time = new SimpleDateFormat("HH:mm:ss +5:00:00 z");  
-
 			ApplicationDB db = new ApplicationDB();	
 			Connection con = db.getConnection();
 			String check = "";
@@ -695,13 +814,17 @@ public class ApplicationDB {
 			ResultSet rs = ps.executeQuery();
 			rs.next();
 			fare = rs.getFloat("total_fare");
+
 			//System.out.println(fare + " f");
+
 
 			// Round Trip Ticket
 			if(type.equals("round_trip")) {
 				fare *= 2.0f;
 			}
+
 			//System.out.println(fare + " r");
+
 
 			// Discounts
 			if(age.equals("0-17")) {
@@ -709,6 +832,7 @@ public class ApplicationDB {
 			}else if(age.equals("65+")){
 				fare *= 0.65f;
 			}
+
 			
 			//System.out.println(fare + " a");
 			
@@ -735,20 +859,24 @@ public class ApplicationDB {
 			throw e;
 		}
 	}
+
 	public int createReservation(String origin, String dest, String date, String time, String user, String type, String age, String disabled) {
+
 		
 		try {
 			ApplicationDB db = new ApplicationDB();	
 			Connection con = db.getConnection();
 			Float fare = 0.00f;
 			String query = "";
+
 			String dtype = "";
+
 			long millis=System.currentTimeMillis();  
 			Date now = new java.sql.Date(millis); 
 			ResultSet rsc, rsd;
 			//System.out.println(now);
 			//System.out.println(user);
-		 
+
 			// Get transitLine
 			query = "select ts.transitLine from Train_Schedule ts inner join Stops sp  on ts.transitLine = sp.transitLine where stationName = (?) and travelDate = (?);";
 			PreparedStatement ps4 = con.prepareStatement(query);
@@ -798,7 +926,9 @@ public class ApplicationDB {
 			int sched = rsa.getInt("scheduleID");
 			
 			// Fare Calculator
+
 			fare = calculateFare(origin, dest, date, type, age, disabled);
+
 			
 			// Inserts reservation
 			query= "insert into Reservations (reservation_date, total_fare, trainID, scheduleID, customerid, reservation_type) values((?),(?),(?),(?),(?),(?))";
@@ -814,6 +944,8 @@ public class ApplicationDB {
 				return -1;
 			}
 			
+
+
 			if(age.equals("0-17")) {
 				dtype = "child";
 			}else if(age.equals("65+")){
@@ -842,6 +974,7 @@ public class ApplicationDB {
 			}
 			
 			
+
 			// Get highest res_num
 			query = "select reservation_number from Reservations order by reservation_number desc";
 			PreparedStatement ps3 = con.prepareStatement(query);

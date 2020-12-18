@@ -39,51 +39,112 @@ public class CreateEmployeeServlet extends HttpServlet {
 		// TODO Auto-generated method stub
 		doGet(request, response);
 		if(request.getParameter("custrep")!=null || request.getParameter("admin")!=null) {
-			if(request.getParameter("psw").equals(request.getParameter("pswc"))) {
-				if(request.getParameter("email").contains("@")) {
-					int checkUName=appDB.userNameExistence(request.getParameter("uname"),"Employee");
-					if(checkUName == 0) {
-						String custRep = "No";
-						String admin = "No";
-						 if (request.getParameter("custrep")!=null) {
-							 custRep = "Yes";
-						 }
-						 if(request.getParameter("admin") != null) {
-							 admin = "Yes";
-						 }
-						 int empID = appDB.createEmployee(request.getParameter("fname"), request.getParameter("lname"), request.getParameter("email"), request.getParameter("uname"), request.getParameter("psw"),request.getParameter("ssn"),request.getParameter("stationID"),custRep,admin);
-						 if(empID > 0) {
-							String message = "User Created! Employee ID: " + empID;
-							request.setAttribute("message", message);
-							RequestDispatcher rd = request.getRequestDispatcher("createEmployee.jsp");
-							rd.forward(request, response);
-						 }else {
-							String message = "FATAL DATABASE ERROR";
-							request.setAttribute("message", message);
-							RequestDispatcher rd = request.getRequestDispatcher("createEmployee.jsp");
-							rd.forward(request, response);
-						 }
-					}else {
-						if(checkUName == -1) {
-							String message = "FATAL DATABASE ERROR";
-							request.setAttribute("message", message);
-							RequestDispatcher rd = request.getRequestDispatcher("createEmployee.jsp");
-							rd.forward(request, response);
+			if(request.getParameter("custrep")!=null && request.getParameter("manager")!=null) {
+				int checkManager = appDB.managerExistence(request.getParameter("manager"));
+				if(checkManager >= 1) {
+					if(request.getParameter("psw").equals(request.getParameter("pswc"))) {
+						if(request.getParameter("email").contains("@")) {
+							int checkUName=appDB.userNameExistence(request.getParameter("uname"),"Employee");
+							if(checkUName == 0) {
+								int checkstationID = appDB.stationExistence(request.getParameter("stationID"));
+								if (checkstationID >= 1){
+									String custRep = "No";
+									String admin = "No";
+									 if (request.getParameter("custrep")!=null) {
+										 System.out.println("not admin");
+										 custRep = "Yes";
+									 }
+									 if(request.getParameter("admin") != null) {
+										 System.out.println("admin");
+										 admin = "Yes";
+									 }
+									 int empID = appDB.createEmployee(request.getParameter("fname"), request.getParameter("lname"), request.getParameter("email"), request.getParameter("uname"), request.getParameter("psw"),request.getParameter("ssn"),request.getParameter("stationID"),custRep,admin);
+									 if(empID > 0) {
+										
+										if(custRep.equals("Yes")) {
+											int empID1;
+											if(admin.equals("Yes")) {
+												 empID1 = appDB.setManager(String.valueOf(empID),String.valueOf(empID));
+											}else {
+												 empID1 = appDB.setManager(String.valueOf(empID),request.getParameter("manager"));
+											}
+											if(empID1>0) {
+												String message = "User Created! Employee ID: " + empID;
+												request.setAttribute("message", message);
+												RequestDispatcher rd = request.getRequestDispatcher("createEmployee.jsp");
+												rd.forward(request, response);
+											}else {
+												String message = "FATAL DATABASE ERROR";
+												request.setAttribute("message", message);
+												RequestDispatcher rd = request.getRequestDispatcher("createEmployee.jsp");
+												rd.forward(request, response);
+											}
+										}else {
+											String message = "User Created! Employee ID: " + empID;
+											request.setAttribute("message", message);
+											RequestDispatcher rd = request.getRequestDispatcher("createEmployee.jsp");
+											rd.forward(request, response);
+										} 
+									 }else {
+										String message = "FATAL DATABASE ERROR";
+										request.setAttribute("message", message);
+										RequestDispatcher rd = request.getRequestDispatcher("createEmployee.jsp");
+										rd.forward(request, response);
+									 }
+									
+								}else {
+									if(checkUName == -1) {
+										String message = "FATAL DATABASE ERROR";
+										request.setAttribute("message", message);
+										RequestDispatcher rd = request.getRequestDispatcher("createEmployee.jsp");
+										rd.forward(request, response);
+									}else {
+										String message = "Station Does Not Exist";
+										request.setAttribute("message", message);
+										RequestDispatcher rd = request.getRequestDispatcher("createEmployee.jsp");
+										rd.forward(request, response);
+									}
+									
+								}
+
+							}else {
+								if(checkUName == -1) {
+									String message = "FATAL DATABASE ERROR";
+									request.setAttribute("message", message);
+									RequestDispatcher rd = request.getRequestDispatcher("createEmployee.jsp");
+									rd.forward(request, response);
+								}else {
+									String message = "Username Already Exists";
+									request.setAttribute("message", message);
+									RequestDispatcher rd = request.getRequestDispatcher("createEmployee.jsp");
+									rd.forward(request, response);
+								}
+							}
 						}else {
-							String message = "Username Already Exists";
+							String message = "Invalid Email";
+
 							request.setAttribute("message", message);
 							RequestDispatcher rd = request.getRequestDispatcher("createEmployee.jsp");
 							rd.forward(request, response);
 						}
+
+					}else {
+						String message = "Passwords Do Not Match";
+						request.setAttribute("message", message);
+						RequestDispatcher rd = request.getRequestDispatcher("createEmployee.jsp");
+						rd.forward(request, response);
 					}
+					
 				}else {
-					String message = "Invalid Email";
+					String message = "Customer Rep Must Have a Valid Manager";
+
 					request.setAttribute("message", message);
 					RequestDispatcher rd = request.getRequestDispatcher("createEmployee.jsp");
 					rd.forward(request, response);
 				}
 			}else {
-				String message = "Passwords Do Not Match";
+				String message = "Customer Rep Must Have a Valid Manager";
+
 				request.setAttribute("message", message);
 				RequestDispatcher rd = request.getRequestDispatcher("createEmployee.jsp");
 				rd.forward(request, response);
