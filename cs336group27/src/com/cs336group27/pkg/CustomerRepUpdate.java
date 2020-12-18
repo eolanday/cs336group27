@@ -82,6 +82,7 @@ public class CustomerRepUpdate extends HttpServlet {
 				RequestDispatcher rd = request.getRequestDispatcher("adminCustRepEdit.jsp");
 				rd.forward(request, response);
 			}
+
 		}else {
 			String message = "Invalid Email";
 			request.setAttribute("message", message);

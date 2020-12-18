@@ -122,10 +122,12 @@ public class CreateEmployeeServlet extends HttpServlet {
 							}
 						}else {
 							String message = "Invalid Email";
+
 							request.setAttribute("message", message);
 							RequestDispatcher rd = request.getRequestDispatcher("createEmployee.jsp");
 							rd.forward(request, response);
 						}
+
 					}else {
 						String message = "Passwords Do Not Match";
 						request.setAttribute("message", message);
@@ -135,12 +137,14 @@ public class CreateEmployeeServlet extends HttpServlet {
 					
 				}else {
 					String message = "Customer Rep Must Have a Valid Manager";
+
 					request.setAttribute("message", message);
 					RequestDispatcher rd = request.getRequestDispatcher("createEmployee.jsp");
 					rd.forward(request, response);
 				}
 			}else {
 				String message = "Customer Rep Must Have a Valid Manager";
+
 				request.setAttribute("message", message);
 				RequestDispatcher rd = request.getRequestDispatcher("createEmployee.jsp");
 				rd.forward(request, response);
